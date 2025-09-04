@@ -36,6 +36,11 @@ deps:
 # Build and test
 all: fmt vet test build
 
+# E2E Testing
+e2e-test:
+	@echo "Running end-to-end tests..."
+	./test-e2e.sh
+
 # Web App Development
 WEB_APP_DIR=user-tools/artist-gemini/canvas-web-md-editor
 
