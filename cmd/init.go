@@ -197,26 +197,34 @@ func createBoilerplateFiles(dirs ...string) {
 		// Determine template type based on directory name
 		templateType := getTemplateType(dir)
 
-		// Copy README.md from template
+		// Try to copy README.md from template, fall back to inline generation
 		readmeTemplate := findTemplatePath(templateType, "README.md")
 		readmeDest := filepath.Join(dir, "README.md")
 		if readmeTemplate != "" {
 			if err := copyFile(readmeTemplate, readmeDest); err != nil {
-				fmt.Printf("Error copying README template to %s: %v\n", readmeDest, err)
+				// Fall back to inline generation
+				readmeContent := getDefaultContent(templateType, "README.md", dir)
+				os.WriteFile(readmeDest, []byte(readmeContent), 0644)
 			}
 		} else {
-			fmt.Printf("Warning: README template not found for type %s\n", templateType)
+			// Use inline generation
+			readmeContent := getDefaultContent(templateType, "README.md", dir)
+			os.WriteFile(readmeDest, []byte(readmeContent), 0644)
 		}
 
-		// Copy GEMINI.md from template
+		// Try to copy GEMINI.md from template, fall back to inline generation
 		geminiTemplate := findTemplatePath(templateType, "GEMINI.md")
 		geminiDest := filepath.Join(dir, "GEMINI.md")
 		if geminiTemplate != "" {
 			if err := copyFile(geminiTemplate, geminiDest); err != nil {
-				fmt.Printf("Error copying GEMINI template to %s: %v\n", geminiDest, err)
+				// Fall back to inline generation
+				geminiContent := getDefaultContent(templateType, "GEMINI.md", dir)
+				os.WriteFile(geminiDest, []byte(geminiContent), 0644)
 			}
 		} else {
-			fmt.Printf("Warning: GEMINI template not found for type %s\n", templateType)
+			// Use inline generation
+			geminiContent := getDefaultContent(templateType, "GEMINI.md", dir)
+			os.WriteFile(geminiDest, []byte(geminiContent), 0644)
 		}
 	}
 }
@@ -259,6 +267,12 @@ func getTemplateType(dir string) string {
 }
 
 func findTemplatePath(templateType, filename string) string {
+	// Try relative to current working directory first (for local development)
+	templatePath := filepath.Join("templates", templateType, filename)
+	if _, err := os.Stat(templatePath); err == nil {
+		return templatePath
+	}
+
 	// Get the executable path to find templates relative to the binary
 	execPath, err := os.Executable()
 	if err != nil {
@@ -269,13 +283,7 @@ func findTemplatePath(templateType, filename string) string {
 	execDir := filepath.Dir(execPath)
 
 	// Try relative to executable directory (for installed binary)
-	templatePath := filepath.Join(execDir, "templates", templateType, filename)
-	if _, err := os.Stat(templatePath); err == nil {
-		return templatePath
-	}
-
-	// Try relative to current working directory (for local development)
-	templatePath = filepath.Join("templates", templateType, filename)
+	templatePath = filepath.Join(execDir, "templates", templateType, filename)
 	if _, err := os.Stat(templatePath); err == nil {
 		return templatePath
 	}
@@ -284,6 +292,13 @@ func findTemplatePath(templateType, filename string) string {
 	// Handle case where binary is in a subdirectory
 	parentDir := filepath.Dir(execDir)
 	templatePath = filepath.Join(parentDir, "templates", templateType, filename)
+	if _, err := os.Stat(templatePath); err == nil {
+		return templatePath
+	}
+
+	// Try going up more levels from executable (for GOPATH installs)
+	grandParentDir := filepath.Dir(parentDir)
+	templatePath = filepath.Join(grandParentDir, "templates", templateType, filename)
 	if _, err := os.Stat(templatePath); err == nil {
 		return templatePath
 	}
@@ -298,6 +313,33 @@ func findTemplatePath(templateType, filename string) string {
 
 	// Template not found
 	return ""
+}
+
+func getDefaultContent(templateType, filename, dir string) string {
+	dirName := filepath.Base(dir)
+
+	switch filename {
+	case "README.md":
+		switch templateType {
+		case "atelier":
+			return fmt.Sprintf("# %s\n\nWelcome to your Atelier workspace!\n\nThis directory contains your software projects organized as:\n- Atelier: Main workspace (this level)\n- Artists: Project groups (Git submodules)\n- Canvases: Individual projects (Git submodules)\n\nEach canvas is an independent Git repository for isolated development.", dirName)
+		case "artist":
+			return fmt.Sprintf("# %s\n\nArtist workspace containing multiple project canvases.\n\nEach canvas is an independent Git repository. Work in any canvas directory to develop independently.\n\n## Canvases\nNavigate to any canvas-* directory to start working on a specific project.", dirName)
+		case "canvas":
+			return fmt.Sprintf("# %s\n\nProject canvas for independent development.\n\nThis is a complete Git repository where you can develop your software project.\n\n## Getting Started\n1. This directory has its own Git repository\n2. Work here independently of other projects\n3. Commit changes: git add . && git commit -m 'your message'", dirName)
+		}
+	case "GEMINI.md":
+		switch templateType {
+		case "atelier":
+			return fmt.Sprintf("# AI Context: %s Atelier\n\nThis is the root level of an atelier workspace.\n\n## Architecture\n- Atelier: Main repository (this level)\n- Artists: Git submodules containing project groups\n- Canvases: Git submodules containing individual projects\n\n## Development\nEach canvas is an independent Git repository for isolated development.", dirName)
+		case "artist":
+			return fmt.Sprintf("# AI Context: %s Artist\n\nArtist workspace grouping related project canvases.\n\n## Structure\n- This artist contains multiple canvas submodules\n- Each canvas is an independent Git repository\n- Work in canvas directories for project development\n\n## Context\nUse this level to organize related projects thematically.", dirName)
+		case "canvas":
+			return fmt.Sprintf("# AI Context: %s Canvas\n\nIndividual project canvas with independent Git repository.\n\n## Development\n- This directory has its own Git history\n- Develop software independently here\n- Commit changes affect only this project\n\n## Architecture\nComplete, self-contained software project with own repository.", dirName)
+		}
+	}
+
+	return fmt.Sprintf("# %s\n\nDefault content for %s.\n", dirName, filename)
 }
 
 func copyFile(src, dst string) error {
