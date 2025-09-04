@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +25,8 @@ var canvasInitCmd = &cobra.Command{
 
 		// Check if we're in an artist directory
 		if _, err := os.Stat(".artist"); os.IsNotExist(err) {
-			fmt.Println("Error: Not in an artist directory. Run 'artist init <name>' first, then cd into the created directory.")
+			fmt.Println("Error: Not in an artist directory.")
+			listAvailableArtists()
 			return
 		}
 
@@ -48,6 +50,32 @@ var canvasInitCmd = &cobra.Command{
 
 		fmt.Printf("Canvas '%s' initialized\n", canvas)
 	},
+}
+
+func listAvailableArtists() {
+	fmt.Println("Available artists in current atelier:")
+
+	entries, err := os.ReadDir(".")
+	if err != nil {
+		fmt.Printf("Error reading directory: %v\n", err)
+		return
+	}
+
+	found := false
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasPrefix(entry.Name(), "artist-") {
+			artistName := strings.TrimPrefix(entry.Name(), "artist-")
+			fmt.Printf("  - %s (cd %s)\n", artistName, entry.Name())
+			found = true
+		}
+	}
+
+	if !found {
+		fmt.Println("  No artists found in current atelier.")
+		fmt.Println("  Create one with: artist init <name>")
+	} else {
+		fmt.Println("\nTo work with an artist, run: cd <artist-directory>")
+	}
 }
 
 func init() {
