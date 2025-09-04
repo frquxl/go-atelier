@@ -168,6 +168,16 @@ func createArtistBoilerplate(basePath, projectType string) error {
 		return err
 	}
 
+	// Makefile
+	makefilePath := fmt.Sprintf("templates/%s/Makefile", projectType)
+	makefileContent, err := artistTemplatesFS.ReadFile(makefilePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", makefilePath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, "Makefile"), makefileContent); err != nil {
+		return err
+	}
+
 	return nil
 }
 

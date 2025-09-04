@@ -69,6 +69,7 @@
       - `.artist`: Marker file identifying this as an artist workspace
       - `README.md`: Artist-specific documentation
       - `GEMINI.md`: AI context file for the artist
+      - `Makefile`: Git submodule management (customizable for artist workflows)
       - `.gitignore`: Git ignore patterns for the artist
       - `.geminiignore`: AI context ignore patterns for the artist
       - `canvas-<name>/`: **Git Submodule** (project workspace)
