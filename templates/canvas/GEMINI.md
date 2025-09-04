@@ -1,34 +1,95 @@
 # Canvas AI Context
 
-## Project Overview
-<!-- Brief description of this canvas/project -->
+## 🖼️ Canvas Overview
+This is a project canvas - an independent software development project within the atelier/artist/canvas architecture.
 
-## Technology Stack
-<!-- Languages, frameworks, tools used in this project -->
+## 🎯 Project Identity
+**Canvas projects** are complete, self-contained software projects with their own Git repository. Each canvas:
+- Has its own independent Git repository
+- Can be developed, tested, and deployed separately
+- Maintains its own dependencies and configurations
+- Is organized thematically within an artist workspace
 
-## Development Status
-<!-- Current state: planning, development, testing, production -->
+## 📁 Project Structure
+```
+canvas/
+├── .git/                    # Independent Git repository
+├── README.md               # Human project documentation
+├── GEMINI.md               # AI context (this file)
+├── src/                    # Source code
+├── tests/                  # Test files
+├── docs/                   # Documentation
+├── .gitignore              # Git ignore patterns
+└── [project-specific files]
+```
 
-## Key Components
-<!-- Main files, modules, or components -->
+## 🤖 AI Pair Programming Guidelines
 
-## AI Collaboration Guidelines
-- Update this file as the project evolves
-- Document important decisions and patterns
-- Track TODOs and known issues
-- Note any AI-specific patterns or preferences
+### Understanding This Canvas
+- **Purpose**: What problem does this project solve?
+- **Scope**: What functionality is included/excluded?
+- **Technology**: What languages, frameworks, and tools are used?
+- **Audience**: Who will use this software?
 
-## Development Notes
-<!-- Any special development notes, gotchas, or patterns -->
+### Development Context
+- **Independent Repository**: This canvas has its own Git history
+- **Isolated Environment**: Own dependencies and configurations
+- **Version Control**: Complete Git workflow within this directory
+- **Deployment**: Can be built, tested, and deployed independently
 
-## Dependencies
-<!-- Key dependencies, libraries, or external services -->
+### Code Patterns
+- **Architecture**: What design patterns and architectural decisions?
+- **Coding Standards**: What conventions and style guidelines?
+- **Testing Strategy**: How is code quality ensured?
+- **Documentation**: How is the codebase documented?
 
-## Testing
-<!-- Testing approach, frameworks, or strategies -->
+### Git Workflow
+- **Branching**: Feature branches, release branches, etc.
+- **Commits**: Atomic, descriptive commit messages
+- **Pull Requests**: Code review and collaboration process
+- **Releases**: Versioning and release management
 
-## Deployment
-<!-- Deployment process, environment details -->
+## 🔧 Development Best Practices
 
-## Contact
-<!-- Point of contact for this project -->
+### Code Quality
+- Write clean, readable, maintainable code
+- Follow established patterns and conventions
+- Include comprehensive tests
+- Document complex logic and decisions
+
+### Collaboration
+- Use clear commit messages
+- Write helpful PR descriptions
+- Review code thoroughly
+- Communicate design decisions
+
+### Project Management
+- Break work into manageable tasks
+- Track progress and blockers
+- Plan releases and milestones
+- Maintain project documentation
+
+## 🎯 Project Goals & Success Criteria
+
+*What are the measurable outcomes for this project?*
+
+*How will success be evaluated?*
+
+*What are the key milestones and deliverables?*
+
+## 🚀 Development Workflow
+
+1. **Understand the codebase**: Review existing code and documentation
+2. **Plan your changes**: Break down tasks and create a plan
+3. **Implement features**: Write clean, tested code
+4. **Commit regularly**: Use descriptive commit messages
+5. **Collaborate**: Share progress and get feedback
+6. **Deploy**: Test and release your changes
+
+## 📚 Documentation
+- **README.md**: Human-readable project guide
+- **GEMINI.md**: AI pair programming context (this file)
+- **Code comments**: Inline documentation
+- **API docs**: Interface and usage documentation
+
+This canvas provides a focused, independent environment for developing high-quality software within the atelier ecosystem.

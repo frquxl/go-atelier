@@ -1,31 +1,80 @@
-# Canvas Project
+# Project Canvas
 
-Welcome to your project canvas! This is where your code and creative work comes to life.
+Welcome to your Project Canvas! 🖼️
 
-## Project Overview
-<!-- Brief description of this project/canvas -->
+This is your actual development workspace - a complete, independent software project with its own Git repository.
 
-## Getting Started
-<!-- Setup instructions, prerequisites, etc. -->
+## 🎯 Project Overview
 
-## Development
-<!-- Development workflow, commands, etc. -->
+**Project canvases** are self-contained software projects within the atelier/artist/canvas architecture. Each canvas:
+- Has its own independent Git repository
+- Can be developed, tested, and deployed separately
+- Maintains its own dependencies and configurations
+- Is organized thematically within an artist workspace
 
-## Structure
+## 📁 Project Structure
+
 ```
-<canvas-name>/
-├── README.md          # This file
-├── GEMINI.md          # AI context for this project
-└── [your code files]  # Your project files go here
+canvas/
+├── .git/                    # Independent Git repository
+├── README.md               # This project documentation
+├── GEMINI.md               # AI pair programming context
+├── src/                    # Source code directory
+├── tests/                  # Test files and test suites
+├── docs/                   # Project documentation
+├── .gitignore              # Git ignore patterns
+└── [project-specific files]
 ```
 
-## Commands Used to Create This Canvas
-<!-- Note: This canvas was created using atelier CLI -->
+## 🚀 Getting Started
 
-## Next Steps
-1. Start coding your project
-2. Update this README with project details
-3. Update GEMINI.md with AI context
-4. Use git for version control
+1. **Set up your environment**: Install dependencies, configure tools
+2. **Explore the codebase**: Review existing code and documentation
+3. **Start developing**: Add features, fix bugs, write tests
+4. **Commit regularly**: `git add . && git commit -m "feat: your changes"`
 
-Happy coding! 🚀
+## 🔧 Development Guidelines
+
+### Code Organization
+- Keep source code in `src/` directory
+- Place tests in `tests/` directory
+- Use `docs/` for project documentation
+- Follow your team's coding standards
+
+### Git Workflow
+- **Independent repository**: This canvas has its own Git history
+- **Regular commits**: Commit early and often
+- **Descriptive messages**: Use clear commit messages
+- **Branch strategy**: Use feature branches for new work
+
+### Best Practices
+- ✅ Write tests for new features
+- ✅ Update documentation as you go
+- ✅ Keep dependencies up to date
+- ✅ Follow security best practices
+- ✅ Review code before committing
+
+## 🎯 Project Goals
+
+*What is this project trying to achieve?*
+
+*What technologies and frameworks are you using?*
+
+*Who is the target audience?*
+
+*What are the success criteria?*
+
+## 🤝 Contributing
+
+*How should others contribute to this project?*
+
+*What are the coding standards and conventions?*
+
+*How do you want to collaborate?*
+
+## 📚 Documentation
+
+- **README.md**: Human-readable project guide (this file)
+- **GEMINI.md**: AI pair programming context and patterns
+
+Happy coding! 🚀✨

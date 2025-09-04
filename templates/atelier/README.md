@@ -1,28 +1,58 @@
-# Atelier
+# Atelier Workspace
 
-Welcome to your creative workspace! This is the root directory of your atelier - your personal studio for software development.
+Welcome to your Atelier workspace! 🎨
 
-## Getting Started
+This is the root directory of your atelier - your personal studio for software development using a 3-level Git submodule architecture.
 
-This atelier contains multiple artist workspaces, each with their own canvas projects. Navigate to an artist's directory to explore their work.
+## 🏗️ Architecture Overview
 
-## Artists in This Atelier
+Your atelier uses a hierarchical structure:
+- **Atelier** (this level): Main workspace and project container
+- **Artists** (Git submodules): Thematic groupings of related projects
+- **Canvases** (Git submodules): Individual software projects
 
-<!-- List of artists will be added here as you create new workspaces -->
+## 🚀 Getting Started
 
-## Commands
+1. **Explore artists**: `ls artist-*` to see available artist workspaces
+2. **Work on projects**: `cd artist-name/canvas-name` to enter a project
+3. **Develop independently**: Each canvas is its own Git repository
 
-- `atelier init <artist> <canvas>` - Create a new artist workspace
-- `artist init <artist>` - Add a new artist to this atelier
-
-## Structure
+## 📁 Directory Structure
 
 ```
 atelier/
-├── README.md          # This file
-├── GEMINI.md          # AI context for the atelier
-└── <artist-name>/     # Individual artist workspaces
-    └── <canvas-name>/ # Project canvases
+├── .git/              # Main atelier repository
+├── .gitmodules       # Tracks artist submodules
+├── README.md         # This file (human guide)
+├── GEMINI.md         # AI context for pair programming
+└── artist-*/         # Artist workspaces (Git submodules)
+    ├── .git/         # Artist's Git repository
+    ├── .gitmodules   # Tracks canvas submodules
+    ├── README.md     # Artist documentation
+    ├── GEMINI.md     # Artist AI context
+    └── canvas-*/     # Project canvases (Git submodules)
+        ├── .git/     # Canvas's Git repository
+        ├── README.md # Project documentation
+        └── GEMINI.md # Project AI context
 ```
 
-Happy creating! 🎨
+## 🔧 Development Workflow
+
+- Each canvas is an **independent Git repository**
+- Artists organize related canvases thematically
+- The atelier tracks the overall project structure
+- Use Git submodules for clean version control separation
+
+## 🎨 Working with Your Atelier
+
+- **Add artists**: Create new artist workspaces for different themes
+- **Add canvases**: Create new projects within artists
+- **Version control**: Each level has its own Git history
+- **Independence**: Projects don't interfere with each other
+
+## 📚 Documentation
+
+- **README.md** (this file): Human-readable workspace guide
+- **GEMINI.md**: AI pair programming context and patterns
+
+Happy creating! 🎨✨

@@ -152,8 +152,12 @@ If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 			return
 		}
 
+		// Go back to atelier directory to create boilerplate files
+		os.Chdir("..")
 		// Create boilerplate files for atelier level
 		createBoilerplateFiles(".")
+		// Go back to artist directory for final commits
+		os.Chdir(artistDir)
 
 		// Commit canvas submodule addition to artist
 		if err := exec.Command("git", "add", canvasDir).Run(); err != nil {
@@ -190,75 +194,110 @@ func init() {
 
 func createBoilerplateFiles(dirs ...string) {
 	for _, dir := range dirs {
-		readmePath := filepath.Join(dir, "README.md")
-		geminiPath := filepath.Join(dir, "GEMINI.md")
+		// Determine template type based on directory name
+		templateType := getTemplateType(dir)
 
-		// Determine template type based on directory prefix
-		var templateType string
-		baseName := filepath.Base(dir)
-		if strings.HasPrefix(baseName, "atelier-") {
-			templateType = "atelier"
-		} else if strings.HasPrefix(baseName, "artist-") {
-			templateType = "artist"
-		} else if strings.HasPrefix(baseName, "canvas-") {
-			templateType = "canvas"
+		// Copy README.md from template
+		readmeTemplate := findTemplatePath(templateType, "README.md")
+		readmeDest := filepath.Join(dir, "README.md")
+		if readmeTemplate != "" {
+			if err := copyFile(readmeTemplate, readmeDest); err != nil {
+				fmt.Printf("Error copying README template to %s: %v\n", readmeDest, err)
+			}
 		} else {
-			templateType = "canvas" // fallback
+			fmt.Printf("Warning: README template not found for type %s\n", templateType)
 		}
 
-		// Create README file with default content
-		readmeContent := getDefaultContent(templateType, "README.md", dir)
-		if err := os.WriteFile(readmePath, []byte(readmeContent), 0644); err != nil {
-			fmt.Printf("Error creating %s: %v\n", readmePath, err)
-		}
-
-		// Create GEMINI file with default content
-		geminiContent := getDefaultContent(templateType, "GEMINI.md", dir)
-		if err := os.WriteFile(geminiPath, []byte(geminiContent), 0644); err != nil {
-			fmt.Printf("Error creating %s: %v\n", geminiPath, err)
+		// Copy GEMINI.md from template
+		geminiTemplate := findTemplatePath(templateType, "GEMINI.md")
+		geminiDest := filepath.Join(dir, "GEMINI.md")
+		if geminiTemplate != "" {
+			if err := copyFile(geminiTemplate, geminiDest); err != nil {
+				fmt.Printf("Error copying GEMINI template to %s: %v\n", geminiDest, err)
+			}
+		} else {
+			fmt.Printf("Warning: GEMINI template not found for type %s\n", templateType)
 		}
 	}
+}
+
+func getTemplateType(dir string) string {
+	baseName := filepath.Base(dir)
+
+	// Handle current directory case
+	if baseName == "." {
+		cwd, err := os.Getwd()
+		if err == nil {
+			baseName = filepath.Base(cwd)
+		}
+	}
+
+	// Check for exact prefix matches in priority order
+	if strings.HasPrefix(baseName, "canvas-") {
+		return "canvas"
+	}
+	if strings.HasPrefix(baseName, "artist-") {
+		return "artist"
+	}
+	if strings.HasPrefix(baseName, "atelier-") {
+		return "atelier"
+	}
+
+	// For directories that don't have standard prefixes,
+	// check if they contain atelier/artist/canvas keywords
+	if strings.Contains(baseName, "canvas") {
+		return "canvas"
+	}
+	if strings.Contains(baseName, "artist") {
+		return "artist"
+	}
+	if strings.Contains(baseName, "atelier") {
+		return "atelier"
+	}
+
+	return "atelier" // Default fallback
 }
 
 func findTemplatePath(templateType, filename string) string {
-	// For global installation, we need to find templates relative to the source
-	// Since go install doesn't copy templates, we'll look in common locations
-
-	// First, try relative to current working directory (for local development)
-	if _, err := os.Stat(filepath.Join("templates", templateType, filename)); err == nil {
-		return filepath.Join("templates", templateType, filename)
+	// Get the executable path to find templates relative to the binary
+	execPath, err := os.Executable()
+	if err != nil {
+		return ""
 	}
 
-	// For global installation, we need to embed templates or use a different approach
-	// For now, create simple default content when templates aren't found
+	// Get the directory containing the executable
+	execDir := filepath.Dir(execPath)
+
+	// Try relative to executable directory (for installed binary)
+	templatePath := filepath.Join(execDir, "templates", templateType, filename)
+	if _, err := os.Stat(templatePath); err == nil {
+		return templatePath
+	}
+
+	// Try relative to current working directory (for local development)
+	templatePath = filepath.Join("templates", templateType, filename)
+	if _, err := os.Stat(templatePath); err == nil {
+		return templatePath
+	}
+
+	// Try relative to executable directory with different paths
+	// Handle case where binary is in a subdirectory
+	parentDir := filepath.Dir(execDir)
+	templatePath = filepath.Join(parentDir, "templates", templateType, filename)
+	if _, err := os.Stat(templatePath); err == nil {
+		return templatePath
+	}
+
+	// For development, try relative to the source directory
+	// This handles the case where we're running from the source directory
+	cwd, _ := os.Getwd()
+	templatePath = filepath.Join(cwd, "templates", templateType, filename)
+	if _, err := os.Stat(templatePath); err == nil {
+		return templatePath
+	}
+
+	// Template not found
 	return ""
-}
-
-func getDefaultContent(templateType, filename, dir string) string {
-	dirName := filepath.Base(dir)
-
-	switch filename {
-	case "README.md":
-		switch templateType {
-		case "atelier":
-			return fmt.Sprintf("# %s\n\nWelcome to your atelier workspace!\n\nThis is the root directory for your software projects.\n\n## Getting Started\n\n1. Add artists: `atelier artist init <artist-name>`\n2. Navigate to artists and add canvases\n3. Start developing!\n", dirName)
-		case "artist":
-			return fmt.Sprintf("# %s\n\nArtist workspace for creative development.\n\nThis directory contains your personal workspace and canvases.\n\n## Canvases\n\nAdd canvases with: `atelier canvas init <canvas-name>`\n", dirName)
-		case "canvas":
-			return fmt.Sprintf("# %s\n\nProject canvas for development.\n\nThis is where your actual project code and files go.\n\n## Getting Started\n\nStart developing your project here!\n", dirName)
-		}
-	case "GEMINI.md":
-		switch templateType {
-		case "atelier":
-			return fmt.Sprintf("# AI Context for %s\n\nThis atelier contains multiple artists and their canvases.\n\n## Structure\n\n- Artists: Individual workspaces\n- Canvases: Project areas within artists\n\n## Commands\n\n- `atelier artist init <name>`: Add new artist\n- `atelier artist list`: List artists\n", dirName)
-		case "artist":
-			return fmt.Sprintf("# AI Context for %s\n\nArtist workspace containing multiple canvases.\n\n## Canvases\n\nThis artist can have multiple canvases for different projects.\n\n## Commands\n\n- `atelier canvas init <name>`: Add new canvas\n- `atelier canvas list`: List canvases\n", dirName)
-		case "canvas":
-			return fmt.Sprintf("# AI Context for %s\n\nProject canvas for development work.\n\n## Purpose\n\nThis canvas is where the actual development happens.\n\n## Technologies\n\nAdd your tech stack and project details here.\n", dirName)
-		}
-	}
-
-	return fmt.Sprintf("# %s\n\nDefault content for %s.\n", dirName, filename)
 }
 
 func copyFile(src, dst string) error {
