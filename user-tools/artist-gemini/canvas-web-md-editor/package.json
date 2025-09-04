@@ -10,10 +10,15 @@
   },
   "dependencies": {
     "@isomorphic-git/lightning-fs": "^4.6.2",
+    "@uiw/react-md-editor": "^4.0.4",
     "isomorphic-git": "^1.33.1",
+    "lucide-react": "^0.460.0",
     "next": "15.5.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-markdown": "^9.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
