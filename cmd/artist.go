@@ -148,6 +148,26 @@ func createArtistBoilerplate(basePath, projectType string) error {
 		return err
 	}
 
+	// .gitignore
+	gitignorePath := fmt.Sprintf("templates/%s/gitignore", projectType)
+	gitignoreContent, err := artistTemplatesFS.ReadFile(gitignorePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", gitignorePath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, ".gitignore"), gitignoreContent); err != nil {
+		return err
+	}
+
+	// .geminiignore
+	geminiignorePath := fmt.Sprintf("templates/%s/geminiignore", projectType)
+	geminiignoreContent, err := artistTemplatesFS.ReadFile(geminiignorePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", geminiignorePath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, ".geminiignore"), geminiignoreContent); err != nil {
+		return err
+	}
+
 	return nil
 }
 

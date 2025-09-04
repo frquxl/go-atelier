@@ -9,7 +9,7 @@
 - **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
 - **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
 - **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
-- **Embedded Template System**: Generates README.md and GEMINI.md files from templates embedded in the binary.
+- **Embedded Template System**: Generates README.md, GEMINI.md, .gitignore, and .geminiignore files from templates embedded in the binary.
 
 ## Commands
 
@@ -23,7 +23,7 @@
   - Creates `canvas-<canvas-name>` as Git submodule of artist.
   - Sets up `.gitmodules` files to track submodule relationships.
   - Creates marker files: `.atelier`, `.artist`, and `.canvas` in respective directories.
-  - Generates contextual README.md and GEMINI.md files at each level.
+  - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files at each level.
   - Commits all changes with proper Git submodule setup.
 
 ### artist init
@@ -36,7 +36,7 @@
   - Creates default `canvas-example` as submodule of the artist.
   - Sets up `.gitmodules` file in artist to track canvas submodules.
   - Creates marker files: `.artist` and `.canvas` in respective directories.
-  - Generates contextual README.md and GEMINI.md files.
+  - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files.
   - Commits submodule relationships to both atelier and artist repositories.
 
 ### canvas init
@@ -48,7 +48,7 @@
   - Adds canvas as submodule to parent artist repository.
   - Updates artist's `.gitmodules` file to track the new canvas.
   - Creates marker file `.canvas` in the canvas directory.
-  - Generates contextual README.md and GEMINI.md files.
+  - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files.
   - Commits submodule relationship to artist repository.
   
   ## Project Structure
@@ -60,17 +60,23 @@
     - `.atelier`: Marker file identifying this as an atelier root
     - `README.md`: Atelier overview and project documentation
     - `GEMINI.md`: AI context file for the atelier
+    - `.gitignore`: Git ignore patterns for the atelier
+    - `.geminiignore`: AI context ignore patterns for the atelier
     - `artist-<name>/`: **Git Submodule** (artist workspace)
       - `.git/`: Artist's Git repository (submodule)
       - `.gitmodules`: Tracks canvas submodules
       - `.artist`: Marker file identifying this as an artist workspace
       - `README.md`: Artist-specific documentation
       - `GEMINI.md`: AI context file for the artist
+      - `.gitignore`: Git ignore patterns for the artist
+      - `.geminiignore`: AI context ignore patterns for the artist
       - `canvas-<name>/`: **Git Submodule** (project workspace)
         - `.git/`: Canvas's Git repository (submodule)
         - `.canvas`: Marker file identifying this as a canvas/project area
         - `README.md`: Project-specific documentation
         - `GEMINI.md`: AI context file for the canvas
+        - `.gitignore`: Git ignore patterns for the canvas
+        - `.geminiignore`: AI context ignore patterns for the canvas
         - `src/`, `docs/`, etc.: Your actual project files
   
   ### Directory Markers
@@ -170,10 +176,12 @@ Commands automatically detect their execution context:
 ## AI Context Patterns
 
 ### Development Workflow
-- **Iterative Development**: Build up features incrementally, testing at each step
-- **Waypoint Commits**: Use `git add .` and `git commit` at major milestones, not every change
-- **Simple Makefile**: Use `make build`, `make test`, `make run` for common tasks
-- **Keep it Simple**: Focus on MVP functionality, avoid over-engineering
+- **Study Code First**: Always analyze existing code to understand flow and logic before implementing changes
+- **Iterative Implementation**: Build up features incrementally, testing at each step
+- **E2E Testing**: Update and run comprehensive end-to-end tests to validate functionality
+- **Iterate Until Pass**: Fix issues and re-test until all tests pass
+- **Update Documentation**: Keep GEMINI.md and README.md current with implementation details
+- **Commit Changes**: Use conventional commits with clear messages
 - **Global Installation**: Design for `go install` compatibility from day one
 
 ### Code Organization
@@ -182,7 +190,7 @@ Commands automatically detect their execution context:
 - **Internal Packages**: Shared logic is abstracted into internal packages under `pkg/`.
   - `pkg/fs`: Handles all filesystem operations, like creating directories and files.
   - `pkg/gitutil`: Wraps all `git` command executions for consistent error handling and execution.
-- **Embedded Templates**: Templates are embedded directly into the binary using `go:embed` for reliable content generation at runtime.
+- **Embedded Templates**: Templates (README.md, GEMINI.md, .gitignore, .geminiignore) are embedded directly into the binary using `go:embed` for reliable content generation at runtime.
 - **Error Handling**: Commands return errors up to the root, ensuring proper exit codes and enabling deferred cleanup functions for failed initializations.
 - **Marker Files**: Use `.atelier`, `.artist`, `.canvas` files for directory context detection.
 
@@ -206,6 +214,6 @@ Commands automatically detect their execution context:
 - **Helpful Errors**: Error messages include available options and next steps
 - **Consistent Naming**: `atelier-<name>`, `artist-<name>`, `canvas-<name>` format
 - **Default Values**: Sensible defaults (van-gogh/sunflowers) for quick starts
-- **Template Content**: Auto-generated contextual content for README/GEMINI files
+- **Template Content**: Auto-generated contextual content for README.md, GEMINI.md, .gitignore, and .geminiignore files
 - **Submodule Workflow**: CLI handles complex Git submodule relationships transparently
 

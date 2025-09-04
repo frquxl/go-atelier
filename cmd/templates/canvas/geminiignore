@@ -1,0 +1,47 @@
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependencies
+vendor/
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Coverage reports
+coverage.html
+*.cover
+
+# Dist directories
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+
+# Git
+.git/
+.gitignore
+
+# Package files
+package-lock.json
+yarn.lock
+go.sum

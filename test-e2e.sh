@@ -115,6 +115,8 @@ assert_dir_exists "$EXPECTED_ATELIER"
 assert_file_exists "$EXPECTED_ATELIER/.atelier"
 assert_file_exists "$EXPECTED_ATELIER/README.md"
 assert_file_exists "$EXPECTED_ATELIER/GEMINI.md"
+assert_file_exists "$EXPECTED_ATELIER/.gitignore"
+assert_file_exists "$EXPECTED_ATELIER/.geminiignore"
 assert_file_exists "$EXPECTED_ATELIER/.gitmodules"
 assert_git_repo "$EXPECTED_ATELIER"
 
@@ -133,6 +135,8 @@ assert_dir_exists "$EXPECTED_ARTIST"
 assert_file_exists "$EXPECTED_ARTIST/.artist"
 assert_file_exists "$EXPECTED_ARTIST/README.md"
 assert_file_exists "$EXPECTED_ARTIST/GEMINI.md"
+assert_file_exists "$EXPECTED_ARTIST/.gitignore"
+assert_file_exists "$EXPECTED_ARTIST/.geminiignore"
 assert_file_exists "$EXPECTED_ARTIST/.gitmodules"
 assert_git_repo "$EXPECTED_ARTIST"
 
@@ -154,6 +158,8 @@ assert_dir_exists "$EXPECTED_CANVAS"
 assert_file_exists "$EXPECTED_CANVAS/.canvas"
 assert_file_exists "$EXPECTED_CANVAS/README.md"
 assert_file_exists "$EXPECTED_CANVAS/GEMINI.md"
+assert_file_exists "$EXPECTED_CANVAS/.gitignore"
+assert_file_exists "$EXPECTED_CANVAS/.geminiignore"
 assert_git_repo "$EXPECTED_CANVAS"
 
 # Check canvas content
@@ -252,7 +258,7 @@ log_info "Test 7: Verifying complete directory structure..."
 atelier_files=$(find "$EXPECTED_ATELIER" -type f | wc -l)
 atelier_dirs=$(find "$EXPECTED_ATELIER" -type d | wc -l)
 
-if [[ $atelier_files -ge 10 ]]; then
+if [[ $atelier_files -ge 16 ]]; then
     log_success "Atelier has expected number of files ($atelier_files)"
 else
     log_error "Atelier has too few files ($atelier_files)"

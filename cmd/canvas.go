@@ -24,7 +24,7 @@ var canvasCmd = &cobra.Command{
 var canvasInitCmd = &cobra.Command{
 	Use:   "init <canvas-name>",
 	Short: "Initialize a new canvas",
-	Long:  `Initialize a new canvas within the current artist workspace as a Git submodule. Must be run from an artist directory.`, 
+	Long:  `Initialize a new canvas within the current artist workspace as a Git submodule. Must be run from an artist directory.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		// Check if we're in an artist directory
@@ -108,6 +108,26 @@ func createCanvasBoilerplate(basePath, projectType string) error {
 		return fmt.Errorf("failed to read embedded template %s: %w", geminiPath, err)
 	}
 	if err := fs.WriteFile(filepath.Join(basePath, "GEMINI.md"), geminiContent); err != nil {
+		return err
+	}
+
+	// .gitignore
+	gitignorePath := fmt.Sprintf("templates/%s/gitignore", projectType)
+	gitignoreContent, err := canvasTemplatesFS.ReadFile(gitignorePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", gitignorePath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, ".gitignore"), gitignoreContent); err != nil {
+		return err
+	}
+
+	// .geminiignore
+	geminiignorePath := fmt.Sprintf("templates/%s/geminiignore", projectType)
+	geminiignoreContent, err := canvasTemplatesFS.ReadFile(geminiignorePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", geminiignorePath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, ".geminiignore"), geminiignoreContent); err != nil {
 		return err
 	}
 
