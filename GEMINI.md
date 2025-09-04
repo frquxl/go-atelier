@@ -51,3 +51,27 @@ This structure embraces the atelier metaphor to organize software projects intui
 - Initialize a new atelier with custom artist and canvas: `atelier init picasso guernica`
 - Add a new artist to the existing atelier: `artist init monet`
 
+## AI Context Patterns
+
+### Development Workflow
+- **Iterative Development**: Build up features incrementally, testing at each step
+- **Waypoint Commits**: Use `git add .` and `git commit` at major milestones, not every change
+- **Simple Makefile**: Use `make build`, `make test`, `make run` for common tasks
+- **Keep it Simple**: Focus on MVP functionality, avoid over-engineering
+
+### Code Organization
+- **Cobra CLI Framework**: Use idiomatic Go patterns with Cobra for command structure
+- **Command Separation**: Keep commands in separate files under `cmd/` directory
+- **Template Generation**: Simple string-based templates for boilerplate files
+- **Error Handling**: Basic error checking with descriptive messages
+
+### Testing Approach
+- **Manual Testing**: Test CLI commands directly with `./atelier-cli <command>`
+- **Build Verification**: Use `make build` to ensure code compiles
+- **Functional Testing**: Create test directories and verify output structures
+
+### Git Workflow
+- **Feature Branches**: Create branches for new features when needed
+- **Conventional Commits**: Use `feat:`, `fix:`, `docs:` prefixes for commit messages
+- **Version Tagging**: Tag releases with semantic versioning (v0.1.0, v1.0.0, etc.)
+
