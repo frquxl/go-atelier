@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"io"
 	"os"
@@ -10,6 +11,9 @@ import (
 
 	"github.com/spf13/cobra"
 )
+
+//go:embed templates/*
+var templatesFS embed.FS
 
 var initCmd = &cobra.Command{
 	Use:   "init <atelier-name> [<artist-name> <canvas-name>]",
@@ -197,32 +201,24 @@ func createBoilerplateFiles(dirs ...string) {
 		// Determine template type based on directory name
 		templateType := getTemplateType(dir)
 
-		// Try to copy README.md from template, fall back to inline generation
-		readmeTemplate := findTemplatePath(templateType, "README.md")
+		// Create README.md from embedded template
 		readmeDest := filepath.Join(dir, "README.md")
-		if readmeTemplate != "" {
-			if err := copyFile(readmeTemplate, readmeDest); err != nil {
-				// Fall back to inline generation
-				readmeContent := getDefaultContent(templateType, "README.md", dir)
-				os.WriteFile(readmeDest, []byte(readmeContent), 0644)
-			}
+		readmeContent := readEmbeddedTemplate(templateType, "README.md")
+		if readmeContent != "" {
+			os.WriteFile(readmeDest, []byte(readmeContent), 0644)
 		} else {
-			// Use inline generation
+			// Fallback to inline generation
 			readmeContent := getDefaultContent(templateType, "README.md", dir)
 			os.WriteFile(readmeDest, []byte(readmeContent), 0644)
 		}
 
-		// Try to copy GEMINI.md from template, fall back to inline generation
-		geminiTemplate := findTemplatePath(templateType, "GEMINI.md")
+		// Create GEMINI.md from embedded template
 		geminiDest := filepath.Join(dir, "GEMINI.md")
-		if geminiTemplate != "" {
-			if err := copyFile(geminiTemplate, geminiDest); err != nil {
-				// Fall back to inline generation
-				geminiContent := getDefaultContent(templateType, "GEMINI.md", dir)
-				os.WriteFile(geminiDest, []byte(geminiContent), 0644)
-			}
+		geminiContent := readEmbeddedTemplate(templateType, "GEMINI.md")
+		if geminiContent != "" {
+			os.WriteFile(geminiDest, []byte(geminiContent), 0644)
 		} else {
-			// Use inline generation
+			// Fallback to inline generation
 			geminiContent := getDefaultContent(templateType, "GEMINI.md", dir)
 			os.WriteFile(geminiDest, []byte(geminiContent), 0644)
 		}
@@ -264,6 +260,15 @@ func getTemplateType(dir string) string {
 	}
 
 	return "atelier" // Default fallback
+}
+
+func readEmbeddedTemplate(templateType, filename string) string {
+	templatePath := fmt.Sprintf("templates/%s/%s", templateType, filename)
+	content, err := templatesFS.ReadFile(templatePath)
+	if err != nil {
+		return ""
+	}
+	return string(content)
 }
 
 func findTemplatePath(templateType, filename string) string {
