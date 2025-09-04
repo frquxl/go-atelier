@@ -2,29 +2,38 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
 var initCmd = &cobra.Command{
-	Use:   "init [<artist-name> <canvas-name>]",
+	Use:   "init <atelier-name> [<artist-name> <canvas-name>]",
 	Short: "Initialize a new atelier workspace",
 	Long: `Initialize a new atelier workspace with the basic skeleton structure.
-If no arguments are provided, defaults to creating 'van-gogh' as the artist and 'sunflowers' as the canvas.`,
+Creates atelier-<atelier-name> directory. If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			fmt.Println("Error: atelier name is required")
+			return
+		}
+
+		atelierBaseName := args[0]
 		artist := "van-gogh"
 		canvas := "sunflowers"
 
-		if len(args) >= 2 {
-			artist = args[0]
-			canvas = args[1]
+		if len(args) >= 3 {
+			artist = args[1]
+			canvas = args[2]
 		}
 
-		// Create directories
-		atelierDir := "atelier"
+		// Always create atelier-XXXXX format
+		atelierDir := "atelier-" + atelierBaseName
+
 		artistDir := filepath.Join(atelierDir, artist)
 		canvasDir := filepath.Join(artistDir, canvas)
 
@@ -46,8 +55,12 @@ If no arguments are provided, defaults to creating 'van-gogh' as the artist and 
 		// Create boilerplate files
 		createBoilerplateFiles(atelierDir, artistDir, canvasDir)
 
-		fmt.Printf("Atelier initialized with artist '%s' and canvas '%s'\n", artist, canvas)
+		fmt.Printf("Atelier '%s' initialized with artist '%s' and canvas '%s'\n", atelierBaseName, artist, canvas)
 	},
+}
+
+func init() {
+	RootCmd.AddCommand(initCmd)
 }
 
 func createBoilerplateFiles(dirs ...string) {
@@ -55,20 +68,57 @@ func createBoilerplateFiles(dirs ...string) {
 		readmePath := filepath.Join(dir, "README.md")
 		geminiPath := filepath.Join(dir, "GEMINI.md")
 
-		// Simple template content
-		readmeContent := fmt.Sprintf("# %s\n\nThis is a README for %s.\n", filepath.Base(dir), dir)
-		geminiContent := fmt.Sprintf("# AI Context for %s\n\nThis file contains AI context for %s.\n", filepath.Base(dir), dir)
+		// Determine template type based on directory level
+		var templateType string
+		switch filepath.Base(dir) {
+		case "atelier":
+			templateType = "atelier"
+		default:
+			// For artist and canvas directories, use their respective templates
+			if strings.Contains(dir, "/") {
+				parts := strings.Split(dir, "/")
+				if len(parts) >= 2 && parts[len(parts)-2] == "atelier" {
+					templateType = "artist"
+				} else {
+					templateType = "canvas"
+				}
+			} else {
+				templateType = "canvas" // fallback
+			}
+		}
 
-		if err := os.WriteFile(readmePath, []byte(readmeContent), 0644); err != nil {
+		// Copy README template
+		readmeTemplate := filepath.Join("templates", templateType, "README.md")
+		if err := copyFile(readmeTemplate, readmePath); err != nil {
 			fmt.Printf("Error creating %s: %v\n", readmePath, err)
 		}
 
-		if err := os.WriteFile(geminiPath, []byte(geminiContent), 0644); err != nil {
+		// Copy GEMINI template
+		geminiTemplate := filepath.Join("templates", templateType, "GEMINI.md")
+		if err := copyFile(geminiTemplate, geminiPath); err != nil {
 			fmt.Printf("Error creating %s: %v\n", geminiPath, err)
 		}
 	}
 }
 
-func init() {
-	RootCmd.AddCommand(initCmd)
+func copyFile(src, dst string) error {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, sourceFile)
+	if err != nil {
+		return err
+	}
+
+	// Ensure the destination file has the correct permissions
+	return os.Chmod(dst, 0644)
 }

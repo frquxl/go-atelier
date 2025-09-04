@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -22,10 +23,23 @@ var artistInitCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		artist := args[0]
 
-		// Check if atelier exists
-		atelierDir := "atelier"
-		if _, err := os.Stat(atelierDir); os.IsNotExist(err) {
-			fmt.Println("Error: Atelier does not exist. Run 'atelier init' first.")
+		// Check if any atelier-* directory exists
+		atelierDir := ""
+		entries, err := os.ReadDir(".")
+		if err != nil {
+			fmt.Printf("Error reading directory: %v\n", err)
+			return
+		}
+
+		for _, entry := range entries {
+			if entry.IsDir() && strings.HasPrefix(entry.Name(), "atelier-") {
+				atelierDir = entry.Name()
+				break
+			}
+		}
+
+		if atelierDir == "" {
+			fmt.Println("Error: No atelier directory found. Run 'atelier init <name>' first.")
 			return
 		}
 

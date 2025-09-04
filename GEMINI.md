@@ -14,13 +14,13 @@
 
 ### atelier init
 - **Purpose**: Initializes a new atelier workspace by creating the basic skeleton directory structure in the specified directory.
-- **Usage**: `atelier init [<artist-name> <canvas-name>]`
+- **Usage**: `atelier init <atelier-name> [<artist-name> <canvas-name>]`
 - **Functionality**:
-  - If no arguments are provided, defaults to creating `van-gogh` as the artist and `sunflowers` as the canvas.
-  - Creates the directory `atelier` if it doesn't exist.
-  - Within it, generates the subdirectories: `atelier/<artist-name>/<canvas-name>`.
-  - Initializes a Git repository in the `atelier` directory.
-  - Creates boilerplate files: `README.md` and `GEMINI.md` in each directory (`atelier`, `<artist-name>`, `<canvas-name>`), drawn from templates.
+  - Creates directory `atelier-<atelier-name>` (required first argument).
+  - If no artist/canvas provided, defaults to `van-gogh` and `sunflowers`.
+  - Within it, generates the subdirectories: `atelier-<name>/<artist-name>/<canvas-name>`.
+  - Initializes a Git repository in the atelier directory.
+  - Creates boilerplate files: `README.md` and `GEMINI.md` in each directory, drawn from templates.
   
   ### artist init
   - **Purpose**: Creates a new artist studio within the existing atelier.
@@ -47,9 +47,9 @@ This structure embraces the atelier metaphor to organize software projects intui
 
 ## Usage Examples
 
-- Initialize a new atelier with the default example: `atelier init`
-- Initialize a new atelier with custom artist and canvas: `atelier init picasso guernica`
-- Add a new artist to the existing atelier: `artist init monet`
+- Initialize a new atelier with default artist/canvas: `atelier init myproject`
+- Initialize with custom artist and canvas: `atelier init myproject picasso guernica`
+- Add a new artist to existing atelier: `artist init monet`
 
 ## AI Context Patterns
 

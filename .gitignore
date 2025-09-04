@@ -6,8 +6,10 @@
 *.dylib
 
 # Go build artifacts
-atelier
 atelier-cli
+
+# Generated atelier directories (all projects)
+atelier-*
 
 # Test binary, built with `go test -c`
 *.test
