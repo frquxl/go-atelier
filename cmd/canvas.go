@@ -1,13 +1,19 @@
 package cmd
 
 import (
+	"atelier-cli/pkg/fs"
+	"atelier-cli/pkg/gitutil"
+	"embed"
 	"fmt"
 	"os"
-	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
 )
+
+//go:embed templates/*
+var canvasTemplatesFS embed.FS
 
 var canvasCmd = &cobra.Command{
 	Use:   "canvas",
@@ -18,77 +24,94 @@ var canvasCmd = &cobra.Command{
 var canvasInitCmd = &cobra.Command{
 	Use:   "init <canvas-name>",
 	Short: "Initialize a new canvas",
-	Long:  `Initialize a new canvas within the current artist workspace as a Git submodule. Must be run from an artist directory.`,
+	Long:  `Initialize a new canvas within the current artist workspace as a Git submodule. Must be run from an artist directory.`, 
 	Args:  cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		canvas := args[0]
-
+	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		// Check if we're in an artist directory
-		if _, err := os.Stat(".artist"); os.IsNotExist(err) {
-			fmt.Println("Error: Not in an artist directory.")
+		if _, statErr := os.Stat(".artist"); os.IsNotExist(statErr) {
 			listAvailableArtists()
-			return
+			return fmt.Errorf("not in an artist directory. See available artists above")
 		}
 
-		// Create canvas directory as Git repository
-		canvasDir := "canvas-" + canvas
+		canvasName := args[0]
+		canvasDirName := "canvas-" + canvasName
 
-		// Initialize canvas as Git repository
-		if err := exec.Command("git", "init", canvasDir).Run(); err != nil {
-			fmt.Printf("Error initializing canvas Git repository: %v\n", err)
-			return
+		// Get current working directory to construct absolute paths
+		artistPath, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("could not get current working directory: %w", err)
 		}
 
-		// Change to canvas directory to set up files
-		originalDir, _ := os.Getwd()
-		defer os.Chdir(originalDir)
+		canvasPath := filepath.Join(artistPath, canvasDirName)
 
-		if err := os.Chdir(canvasDir); err != nil {
-			fmt.Printf("Error changing to canvas directory: %v\n", err)
-			return
+		// Cleanup on failure
+		defer func() {
+			if err != nil {
+				fmt.Printf("Initialization failed, cleaning up directory: %s\n", canvasPath)
+				os.RemoveAll(canvasPath)
+			}
+		}()
+
+		// 1. Create and initialize Canvas (as a standalone repo first)
+		fmt.Println("Initializing canvas...")
+		if err = fs.CreateDir(canvasPath); err != nil {
+			return err
+		}
+		if err = gitutil.Init(canvasPath); err != nil {
+			return err
+		}
+		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasName)); err != nil {
+			return err
+		}
+		if err = createCanvasBoilerplate(canvasPath, "canvas"); err != nil {
+			return err
+		}
+		if err = gitutil.Add(canvasPath); err != nil {
+			return err
+		}
+		if err = gitutil.Commit(canvasPath, fmt.Sprintf("feat: initialize canvas %s", canvasName)); err != nil {
+			return err
 		}
 
-		// Create marker file
-		if err := os.WriteFile(".canvas", []byte(canvas), 0644); err != nil {
-			fmt.Printf("Error creating marker file: %v\n", err)
-			return
+		// 2. Link canvas to artist
+		fmt.Println("Connecting canvas to artist...")
+		if err = gitutil.AddSubmodule(artistPath, canvasDirName); err != nil {
+			return err
+		}
+		if err = gitutil.Add(artistPath); err != nil {
+			return err
+		}
+		if err = gitutil.Commit(artistPath, fmt.Sprintf("feat: add canvas %s as submodule", canvasName)); err != nil {
+			return err
 		}
 
-		// Create boilerplate files
-		createBoilerplateFiles(".")
-
-		// Commit canvas setup
-		if err := exec.Command("git", "add", ".").Run(); err != nil {
-			fmt.Printf("Error staging canvas files: %v\n", err)
-			return
-		}
-
-		commitMsg := fmt.Sprintf("feat: initialize canvas %s", canvas)
-		if err := exec.Command("git", "commit", "-m", commitMsg).Run(); err != nil {
-			fmt.Printf("Error committing canvas setup: %v\n", err)
-			return
-		}
-
-		// Go back to artist directory
-		os.Chdir(originalDir)
-
-		// Add canvas as submodule to artist
-		if err := exec.Command("git", "submodule", "add", "./"+canvasDir, canvasDir).Run(); err != nil {
-			fmt.Printf("Error adding canvas as submodule: %v\n", err)
-			return
-		}
-		if err := exec.Command("git", "add", canvasDir).Run(); err != nil {
-			fmt.Printf("Error staging submodule: %v\n", err)
-			return
-		}
-
-		if err := exec.Command("git", "commit", "-m", fmt.Sprintf("feat: add canvas %s as submodule", canvas)).Run(); err != nil {
-			fmt.Printf("Error committing submodule addition: %v\n", err)
-			return
-		}
-
-		fmt.Printf("Canvas '%s' initialized as submodule\n", canvas)
+		fmt.Printf("Canvas '%s' initialized successfully in artist '%s'!\n", canvasName, filepath.Base(artistPath))
+		return nil
 	},
+}
+
+func createCanvasBoilerplate(basePath, projectType string) error {
+	// README
+	readmePath := fmt.Sprintf("templates/%s/README.md", projectType)
+	readmeContent, err := canvasTemplatesFS.ReadFile(readmePath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", readmePath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, "README.md"), readmeContent); err != nil {
+		return err
+	}
+
+	// GEMINI.md
+	geminiPath := fmt.Sprintf("templates/%s/GEMINI.md", projectType)
+	geminiContent, err := canvasTemplatesFS.ReadFile(geminiPath)
+	if err != nil {
+		return fmt.Errorf("failed to read embedded template %s: %w", geminiPath, err)
+	}
+	if err := fs.WriteFile(filepath.Join(basePath, "GEMINI.md"), geminiContent); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func listAvailableArtists() {
