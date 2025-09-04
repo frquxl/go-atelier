@@ -177,13 +177,14 @@ Commands automatically detect their execution context:
 - **Global Installation**: Design for `go install` compatibility from day one
 
 ### Code Organization
-- **Cobra CLI Framework**: Use idiomatic Go patterns with Cobra for command structure
-- **Command Separation**: Keep commands in separate files under `cmd/` directory
-- **3-Level Git Submodules**: Atelier → Artists → Canvases architecture for clean separation
-- **Automatic Submodule Management**: CLI handles complex Git submodule setup automatically
-- **Embedded Templates**: Templates embedded in binary for reliable content generation
-- **Error Handling**: Context-aware error messages with helpful suggestions
-- **Marker Files**: Use `.atelier`, `.artist`, `.canvas` files for directory context detection
+- **Cobra CLI Framework**: Use idiomatic Go patterns with Cobra for command structure.
+- **Command Separation**: Keep commands in separate files under the `cmd/` directory.
+- **Internal Packages**: Shared logic is abstracted into internal packages under `pkg/`.
+  - `pkg/fs`: Handles all filesystem operations, like creating directories and files.
+  - `pkg/gitutil`: Wraps all `git` command executions for consistent error handling and execution.
+- **Embedded Templates**: Templates are embedded directly into the binary using `go:embed` for reliable content generation at runtime.
+- **Error Handling**: Commands return errors up to the root, ensuring proper exit codes and enabling deferred cleanup functions for failed initializations.
+- **Marker Files**: Use `.atelier`, `.artist`, `.canvas` files for directory context detection.
 
 ### Testing Approach
 - **Manual Testing**: Test CLI commands directly with `atelier-cli <command>`

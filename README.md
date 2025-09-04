@@ -158,15 +158,14 @@ go test ./...
 ```
 .
 ├── main.go              # CLI entry point
-├── cmd/
-│   ├── root.go         # Root command definition
-│   ├── init.go         # atelier init command
-│   ├── artist.go       # artist commands
-│   ├── canvas.go       # canvas commands
-│   └── templates/      # Embedded template files
-│       ├── atelier/
-│       ├── artist/
-│       └── canvas/
+├── cmd/                 # Cobra command definitions
+│   ├── root.go
+│   ├── init.go
+│   ├── artist.go
+│   └── canvas.go
+├── pkg/                 # Internal packages
+│   ├── fs/              # Filesystem utilities (file creation)
+│   └── gitutil/         # Git command utilities
 ├── go.mod
 ├── go.sum
 └── README.md
