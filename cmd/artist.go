@@ -32,7 +32,7 @@ var artistInitCmd = &cobra.Command{
 
 		// Create artist directory with marker
 		artistDir := "artist-" + artist
-		canvasDir := "canvas-" + artist // Default canvas with same name as artist
+		canvasDir := "canvas-example" // Default canvas with example name
 
 		fullCanvasDir := filepath.Join(artistDir, canvasDir)
 
@@ -44,7 +44,7 @@ var artistInitCmd = &cobra.Command{
 		// Create marker files
 		markerFiles := map[string]string{
 			filepath.Join(artistDir, ".artist"):     artist,
-			filepath.Join(fullCanvasDir, ".canvas"): artist,
+			filepath.Join(fullCanvasDir, ".canvas"): "example",
 		}
 
 		for markerPath, content := range markerFiles {
