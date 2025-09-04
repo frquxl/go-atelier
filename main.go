@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"go-atelier/cmd"
+	"atelier-cli/cmd"
 )
 
 func main() {

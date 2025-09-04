@@ -1,4 +1,4 @@
-module go-atelier
+module atelier-cli
 
 go 1.24.4
 
