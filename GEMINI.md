@@ -9,7 +9,7 @@
 - **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
 - **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
 - **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
-- **Template-Based Boilerplate Generation**: Generates README.md and GEMINI.md files in each directory with contextual content.
+- **Embedded Template System**: Generates README.md and GEMINI.md files from templates embedded in the binary.
 
 ## Commands
 
@@ -181,7 +181,7 @@ Commands automatically detect their execution context:
 - **Command Separation**: Keep commands in separate files under `cmd/` directory
 - **3-Level Git Submodules**: Atelier → Artists → Canvases architecture for clean separation
 - **Automatic Submodule Management**: CLI handles complex Git submodule setup automatically
-- **Template Generation**: Built-in default content generation (no external files needed)
+- **Embedded Templates**: Templates embedded in binary for reliable content generation
 - **Error Handling**: Context-aware error messages with helpful suggestions
 - **Marker Files**: Use `.atelier`, `.artist`, `.canvas` files for directory context detection
 

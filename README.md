@@ -125,7 +125,7 @@ If you try to run a command in the wrong context, you'll get helpful error messa
 - **Metaphor-Driven Interface**: Uses atelier/artist/canvas metaphors for intuitive project organization
 - **Basic Project Scaffolding**: Creates structured directories with essential files
 - **Version Control Integration**: Initializes Git repositories automatically
-- **Template-Based Boilerplate Generation**: Generates README.md and GEMINI.md files from templates
+- **Embedded Template System**: Generates README.md and GEMINI.md files from templates embedded in the binary
 - **Context-Aware Commands**: Commands validate their execution context
 - **Hierarchical Organization**: atelier → artist → canvas structure
 
@@ -162,11 +162,11 @@ go test ./...
 │   ├── root.go         # Root command definition
 │   ├── init.go         # atelier init command
 │   ├── artist.go       # artist commands
-│   └── canvas.go       # canvas commands
-├── templates/          # Template files
-│   ├── atelier/
-│   ├── artist/
-│   └── canvas/
+│   ├── canvas.go       # canvas commands
+│   └── templates/      # Embedded template files
+│       ├── atelier/
+│       ├── artist/
+│       └── canvas/
 ├── go.mod
 ├── go.sum
 └── README.md
