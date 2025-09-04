@@ -15,7 +15,8 @@ Your atelier uses a hierarchical structure:
 
 1. **Explore artists**: `ls artist-*` to see available artist workspaces
 2. **Work on projects**: `cd artist-name/canvas-name` to enter a project
-3. **Develop independently**: Each canvas is its own Git repository
+3. **Set up remote repositories**: Work with your AI pair programmer to push the entire atelier (including all submodules) to private GitHub repositories using SSH. Example prompt: "this is a new project pre configured with submodules, can you get it all remoted private using gh cli, please use the ssh version"
+4. **Develop independently**: Each canvas is its own Git repository
 
 ## 📁 Directory Structure
 
