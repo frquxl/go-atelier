@@ -53,22 +53,34 @@ export const cloneRepo = async (url: string) => {
     if (commits.length === 0) {
       throw new Error('Cloned repository has no commits. It might be empty or the clone failed.');
     }
+    console.log("Cloned repository has commits:", commits); // Log commits
   } catch (e: any) {
     throw new Error(`Failed to verify cloned repository: ${e.message}`);
   }
+
+  // --- NEW DEBUGGING STEP --- 
+  // List contents of the root directory in LightningFS after clone
+  try {
+    const rootContents = await pfs.readdir('/');
+    console.log("Contents of LightningFS root after clone:", rootContents);
+  } catch (e: any) {
+    console.error("Error reading LightningFS root after clone:", e);
+  }
+  // --- END NEW DEBUGGING STEP --- 
 };
 
 export const listFiles = async () => {
   initFs(); // Ensure FS is initialized
-  const files = await git.walk({
+
+  const files = await git.listFiles({
     fs,
     dir,
-    map: async (filepath, [stat]) => {
-      if (!stat || stat.type !== 'blob' || filepath.startsWith('.git/')) return null;
-      return filepath;
-    },
   });
-  return files.filter(Boolean) as string[];
+
+  console.log("Files found by git.listFiles (before .md filter):", files); // Log files before filtering
+
+  // Filter for .md files only
+  return files.filter(filepath => filepath.endsWith('.md'));
 };
 
 export const readFileContent = async (filepath: string) => {

@@ -76,7 +76,7 @@ export default function Home() {
         ) : (
           <textarea
             key={selectedFile}
-            className="w-full flex-1 p-2 border border-gray-300 rounded-md resize-none font-mono text-gray-900" // Added text-gray-900
+            className="w-full flex-1 p-2 border border-gray-300 rounded-md resize-none font-mono text-gray-900 dark:text-gray-100" // Added dark:text-gray-100
             placeholder="Select a file from the sidebar to begin editing..."
             value={fileContent}
             onChange={(e) => setFileContent(e.target.value)}
