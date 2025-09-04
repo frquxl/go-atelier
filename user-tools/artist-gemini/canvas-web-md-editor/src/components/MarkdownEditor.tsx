@@ -1,8 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark, oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+// Note: react-syntax-highlighter imports removed as they're not used in this component
 
 interface MarkdownEditorProps {
   value: string;
