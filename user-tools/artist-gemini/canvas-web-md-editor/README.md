@@ -8,14 +8,33 @@ This is your actual development workspace - a complete, independent software pro
 
 This canvas is dedicated to building a **Progressive Web App (PWA)** that allows users to edit markdown files directly from their web browser, especially on mobile devices. It aims to provide a simple, intuitive interface for managing documentation within Git repositories.
 
-## 📁 Project Structure
+## ✨ Latest Features (v0.3.0)
+
+### 🔐 **Private Repository Support**
+- **Full GitHub Integration**: Access both public and private repositories
+- **Secure Authentication**: Server-side proxy prevents token exposure
+- **SSO Support**: Works with GitHub organizations requiring SSO authorization
+
+### 🎨 **Enhanced User Interface**
+- **Compact Repository Selector**: Streamlined sidebar with scrollable repository list
+- **Full-screen Editor**: Maximum editing space by removing top navigation
+- **Visual Repository Indicators**: 🔒 Private / 🌐 Public repository badges
+- **Mobile-first Design**: Optimized for tablets and mobile devices
+
+### 🔧 **Technical Improvements**
+- **Server-side Git Proxy**: Secure authentication without exposing tokens
+- **Better Error Handling**: Clear error messages and debugging information
+- **Improved Performance**: Optimized repository loading and file operations
+- **Enhanced Security**: Environment-based configuration for sensitive data
+
+## � Project Structure
 
 ```
 web-app/
 ├── public/                  # Static assets (images, favicons)
 ├── src/                     # Application source code
 │   ├── app/                 # Next.js App Router pages and layouts
-│   ├── components/          # Reusable React components (Header, Sidebar)
+│   ├── components/          # Reusable React components
 │   └── lib/                 # Utility functions (Git service)
 ├── node_modules/            # Project dependencies
 ├── package.json             # Project metadata and dependencies (React, Next.js, isomorphic-git)

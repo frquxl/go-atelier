@@ -4,7 +4,7 @@ import http from 'isomorphic-git/http/web';
 import FS from '@isomorphic-git/lightning-fs';
 
 let fs: FS;
-let pfs: typeof FS.promises;
+let pfs: any;
 const dir = '/';
 
 // Initialize FS only on the client side
@@ -18,10 +18,36 @@ function initFs() {
   }
 }
 
+// Get authentication credentials based on repository URL
+function getAuthFromUrl(url: string) {
+  if (url.includes('github.com')) {
+    const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    if (token) {
+      // For GitHub, use token as username for better CORS proxy compatibility
+      return { username: token, password: 'x-oauth-basic' };
+    }
+  } else if (url.includes('gitlab.com')) {
+    const token = process.env.NEXT_PUBLIC_GITLAB_TOKEN || process.env.GITLAB_TOKEN;
+    if (token) {
+      return { username: 'oauth2', password: token };
+    }
+  } else if (url.includes('bitbucket.org')) {
+    const username = process.env.NEXT_PUBLIC_BITBUCKET_USERNAME || process.env.BITBUCKET_USERNAME;
+    const password = process.env.NEXT_PUBLIC_BITBUCKET_PASSWORD || process.env.BITBUCKET_PASSWORD;
+    if (username && password) {
+      return { username, password };
+    }
+  }
+  return null;
+}
+
 // NOTE: Cloning from GitHub will require a CORS proxy.
 // For MVP, we can use a repo hosted on a server with permissive CORS.
 export const cloneRepo = async (url: string) => {
   initFs(); // Ensure FS is initialized
+
+  // Get authentication credentials
+  const auth = getAuthFromUrl(url);
 
   // Before cloning, wipe the filesystem to ensure a clean slate
   const allFiles = await pfs.readdir('/');
@@ -36,14 +62,29 @@ export const cloneRepo = async (url: string) => {
     }
   }
 
+  // For GitHub, try embedding credentials in URL for CORS proxy
+  let finalUrl = url;
+  if (url.includes('github.com') && auth) {
+    const token = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    if (token) {
+      finalUrl = url.replace('https://', `https://${token}:x-oauth-basic@`);
+    }
+  }
+
   await git.clone({
     fs,
     http,
     dir,
     url,
-    corsProxy: 'https://cors.isomorphic-git.org',
+    corsProxy: '/api/git-proxy',
     singleBranch: true,
     depth: 1,
+    ...(auth && {
+      onAuth: () => auth,
+      onAuthFailure: (url: string, auth: any) => {
+        throw new Error(`Authentication failed for ${url}`);
+      }
+    }),
   });
 
   // After cloning, verify that there's at least one commit
@@ -111,14 +152,28 @@ export const saveFile = async (filepath: string, content: string) => {
   });
 };
 
-export const pushChanges = async (token: string) => {
+export const pushChanges = async (token?: string) => {
   initFs(); // Ensure FS is initialized
+
+  let auth: any = null;
+
+  if (token) {
+    auth = { username: token, password: 'x-oauth-basic' };
+  } else {
+    // Try to get auth from current repo URL (assuming it's set somewhere)
+    // For now, we'll use a generic approach
+    const githubToken = process.env.NEXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN;
+    if (githubToken) {
+      auth = { username: githubToken, password: 'x-oauth-basic' };
+    }
+  }
+
   await git.push({
     fs,
     http,
     dir,
-    corsProxy: 'https://cors.isomorphic-git.org',
-    onAuth: () => ({ username: token }), // For GitHub, the token is used as the username
+    corsProxy: '/api/git-proxy',
+    ...(auth && { onAuth: () => auth }),
   });
 };
 

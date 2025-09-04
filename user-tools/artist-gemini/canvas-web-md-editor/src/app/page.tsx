@@ -139,28 +139,11 @@ export default function Home() {
     }
   };
 
+
   return (
     <div className="flex h-full">
       <Sidebar onFileSelect={handleFileSelect} />
       <main className="flex-1 flex flex-col">
-        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
-          {selectedFile ? (
-            <h1 className="text-2xl font-bold">
-              Editing: <span className="font-mono">{selectedFile}</span>
-            </h1>
-          ) : (
-            <h1 className="text-2xl font-bold">Markdown Editor</h1>
-          )}
-          {selectedFile && (
-            <button
-              onClick={handleSave}
-              disabled={!isModified || isSaving}
-              className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 disabled:bg-gray-400"
-            >
-              {isSaving ? "Saving..." : "Save Changes"}
-            </button>
-          )}
-        </div>
 
         {selectedFile && (
           <MarkdownToolbar
