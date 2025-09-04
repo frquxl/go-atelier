@@ -1,6 +1,0 @@
-[submodule "canvas-example"]
-	path = canvas-example
-	url = ./canvas-example
-[submodule "canvas-web-md-editor"]
-	path = canvas-web-md-editor
-	url = ./canvas-web-md-editor

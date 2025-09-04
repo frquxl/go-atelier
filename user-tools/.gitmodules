@@ -1,6 +1,0 @@
-[submodule "artist-van-gogh"]
-	path = artist-van-gogh
-	url = ./artist-van-gogh
-[submodule "artist-gemini"]
-	path = artist-gemini
-	url = ./artist-gemini
