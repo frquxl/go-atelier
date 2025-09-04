@@ -14,8 +14,9 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init <atelier-name> [<artist-name> <canvas-name>]",
 	Short: "Initialize a new atelier workspace",
-	Long: `Initialize a new atelier workspace with the basic skeleton structure.
-Creates atelier-<atelier-name> directory. If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
+	Long: `Initialize a new atelier workspace with 3-level Git submodule structure.
+Creates atelier-<atelier-name> as main repo, artist as submodule, canvas as submodule of artist.
+If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			fmt.Println("Error: atelier name is required")
@@ -36,42 +37,150 @@ Creates atelier-<atelier-name> directory. If no artist/canvas provided, defaults
 		artistDir := "artist-" + artist
 		canvasDir := "canvas-" + canvas
 
-		fullArtistDir := filepath.Join(atelierDir, artistDir)
-		fullCanvasDir := filepath.Join(fullArtistDir, canvasDir)
-
-		dirs := []string{atelierDir, fullArtistDir, fullCanvasDir}
-
-		for _, dir := range dirs {
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				fmt.Printf("Error creating directory %s: %v\n", dir, err)
-				return
-			}
-		}
-
-		// Create marker files
-		markerFiles := map[string]string{
-			filepath.Join(atelierDir, ".atelier"):   atelierBaseName,
-			filepath.Join(fullArtistDir, ".artist"): artist,
-			filepath.Join(fullCanvasDir, ".canvas"): canvas,
-		}
-
-		for markerPath, content := range markerFiles {
-			if err := os.WriteFile(markerPath, []byte(content), 0644); err != nil {
-				fmt.Printf("Error creating marker file %s: %v\n", markerPath, err)
-				return
-			}
-		}
-
-		// Initialize Git repository
-		if err := exec.Command("git", "init", atelierDir).Run(); err != nil {
-			fmt.Printf("Error initializing git repository: %v\n", err)
+		// Create atelier directory and initialize as Git repo
+		if err := os.MkdirAll(atelierDir, 0755); err != nil {
+			fmt.Printf("Error creating atelier directory: %v\n", err)
 			return
 		}
 
-		// Create boilerplate files
-		createBoilerplateFiles(atelierDir, fullArtistDir, fullCanvasDir)
+		// Initialize atelier as main Git repository
+		if err := exec.Command("git", "init", atelierDir).Run(); err != nil {
+			fmt.Printf("Error initializing atelier Git repository: %v\n", err)
+			return
+		}
 
-		fmt.Printf("Atelier '%s' initialized with artist '%s' and canvas '%s'\n", atelierBaseName, artist, canvas)
+		// Change to atelier directory
+		originalDir, _ := os.Getwd()
+		defer os.Chdir(originalDir)
+
+		if err := os.Chdir(atelierDir); err != nil {
+			fmt.Printf("Error changing to atelier directory: %v\n", err)
+			return
+		}
+
+		// Create atelier marker file
+		if err := os.WriteFile(".atelier", []byte(atelierBaseName), 0644); err != nil {
+			fmt.Printf("Error creating atelier marker file: %v\n", err)
+			return
+		}
+
+		// Create artist as Git repository
+		if err := exec.Command("git", "init", artistDir).Run(); err != nil {
+			fmt.Printf("Error initializing artist Git repository: %v\n", err)
+			return
+		}
+
+		// Change to artist directory to set up initial commit
+		if err := os.Chdir(artistDir); err != nil {
+			fmt.Printf("Error changing to artist directory: %v\n", err)
+			return
+		}
+
+		// Create artist marker file
+		if err := os.WriteFile(".artist", []byte(artist), 0644); err != nil {
+			fmt.Printf("Error creating artist marker file: %v\n", err)
+			return
+		}
+
+		// Create initial artist boilerplate
+		createBoilerplateFiles(".")
+
+		// Commit artist setup
+		if err := exec.Command("git", "add", ".").Run(); err != nil {
+			fmt.Printf("Error staging artist files: %v\n", err)
+			return
+		}
+
+		if err := exec.Command("git", "commit", "-m", fmt.Sprintf("feat: initialize artist %s", artist)).Run(); err != nil {
+			fmt.Printf("Error committing artist setup: %v\n", err)
+			return
+		}
+
+		// Go back to atelier directory
+		os.Chdir("..")
+
+		// Add artist as submodule to atelier
+		if err := exec.Command("git", "submodule", "add", "./"+artistDir, artistDir).Run(); err != nil {
+			fmt.Printf("Error adding artist as submodule: %v\n", err)
+			return
+		}
+
+		// Change to artist directory to set up canvas
+		if err := os.Chdir(artistDir); err != nil {
+			fmt.Printf("Error changing to artist directory: %v\n", err)
+			return
+		}
+
+		// Create canvas as Git repository
+		if err := exec.Command("git", "init", canvasDir).Run(); err != nil {
+			fmt.Printf("Error initializing canvas Git repository: %v\n", err)
+			return
+		}
+
+		// Change to canvas directory to set up initial commit
+		if err := os.Chdir(canvasDir); err != nil {
+			fmt.Printf("Error changing to canvas directory: %v\n", err)
+			return
+		}
+
+		// Create canvas marker file
+		if err := os.WriteFile(".canvas", []byte(canvas), 0644); err != nil {
+			fmt.Printf("Error creating canvas marker file: %v\n", err)
+			return
+		}
+
+		// Create initial canvas boilerplate
+		createBoilerplateFiles(".")
+
+		// Commit canvas setup
+		if err := exec.Command("git", "add", ".").Run(); err != nil {
+			fmt.Printf("Error staging canvas files: %v\n", err)
+			return
+		}
+
+		if err := exec.Command("git", "commit", "-m", fmt.Sprintf("feat: initialize canvas %s", canvas)).Run(); err != nil {
+			fmt.Printf("Error committing canvas setup: %v\n", err)
+			return
+		}
+
+		// Go back to artist directory
+		os.Chdir("..")
+
+		// Add canvas as submodule to artist
+		if err := exec.Command("git", "submodule", "add", "./"+canvasDir, canvasDir).Run(); err != nil {
+			fmt.Printf("Error adding canvas as submodule: %v\n", err)
+			return
+		}
+
+		// Create boilerplate files for atelier level
+		createBoilerplateFiles(".")
+
+		// Commit canvas submodule addition to artist
+		if err := exec.Command("git", "add", canvasDir).Run(); err != nil {
+			fmt.Printf("Error staging canvas submodule: %v\n", err)
+			return
+		}
+
+		if err := exec.Command("git", "commit", "-m", fmt.Sprintf("feat: add canvas %s as submodule", canvas)).Run(); err != nil {
+			fmt.Printf("Error committing canvas submodule: %v\n", err)
+			return
+		}
+
+		// Go back to atelier directory and commit artist submodule
+		os.Chdir("..")
+		if err := exec.Command("git", "add", artistDir).Run(); err != nil {
+			fmt.Printf("Error staging artist submodule: %v\n", err)
+			return
+		}
+
+		if err := exec.Command("git", "commit", "-m", fmt.Sprintf("feat: add artist %s as submodule", artist)).Run(); err != nil {
+			fmt.Printf("Error committing artist submodule: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Atelier '%s' initialized with 3-level Git submodule structure\n", atelierBaseName)
+		fmt.Printf("├── Artist '%s' (submodule)\n", artist)
+		fmt.Printf("│   └── Canvas '%s' (submodule)\n", canvas)
 	},
 }
 

@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
+	"os/exec"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -18,7 +18,7 @@ var canvasCmd = &cobra.Command{
 var canvasInitCmd = &cobra.Command{
 	Use:   "init <canvas-name>",
 	Short: "Initialize a new canvas",
-	Long:  `Initialize a new canvas within the current artist workspace. Must be run from an artist directory.`,
+	Long:  `Initialize a new canvas within the current artist workspace as a Git submodule. Must be run from an artist directory.`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		canvas := args[0]
@@ -30,25 +30,64 @@ var canvasInitCmd = &cobra.Command{
 			return
 		}
 
-		// Create canvas directory with marker
+		// Create canvas directory as Git repository
 		canvasDir := "canvas-" + canvas
 
-		if err := os.MkdirAll(canvasDir, 0755); err != nil {
-			fmt.Printf("Error creating directory %s: %v\n", canvasDir, err)
+		// Initialize canvas as Git repository
+		if err := exec.Command("git", "init", canvasDir).Run(); err != nil {
+			fmt.Printf("Error initializing canvas Git repository: %v\n", err)
+			return
+		}
+
+		// Change to canvas directory to set up files
+		originalDir, _ := os.Getwd()
+		defer os.Chdir(originalDir)
+
+		if err := os.Chdir(canvasDir); err != nil {
+			fmt.Printf("Error changing to canvas directory: %v\n", err)
 			return
 		}
 
 		// Create marker file
-		markerPath := filepath.Join(canvasDir, ".canvas")
-		if err := os.WriteFile(markerPath, []byte(canvas), 0644); err != nil {
-			fmt.Printf("Error creating marker file %s: %v\n", markerPath, err)
+		if err := os.WriteFile(".canvas", []byte(canvas), 0644); err != nil {
+			fmt.Printf("Error creating marker file: %v\n", err)
 			return
 		}
 
 		// Create boilerplate files
-		createBoilerplateFiles(canvasDir)
+		createBoilerplateFiles(".")
 
-		fmt.Printf("Canvas '%s' initialized\n", canvas)
+		// Commit canvas setup
+		if err := exec.Command("git", "add", ".").Run(); err != nil {
+			fmt.Printf("Error staging canvas files: %v\n", err)
+			return
+		}
+
+		commitMsg := fmt.Sprintf("feat: initialize canvas %s", canvas)
+		if err := exec.Command("git", "commit", "-m", commitMsg).Run(); err != nil {
+			fmt.Printf("Error committing canvas setup: %v\n", err)
+			return
+		}
+
+		// Go back to artist directory
+		os.Chdir(originalDir)
+
+		// Add canvas as submodule to artist
+		if err := exec.Command("git", "submodule", "add", "./"+canvasDir, canvasDir).Run(); err != nil {
+			fmt.Printf("Error adding canvas as submodule: %v\n", err)
+			return
+		}
+		if err := exec.Command("git", "add", canvasDir).Run(); err != nil {
+			fmt.Printf("Error staging submodule: %v\n", err)
+			return
+		}
+
+		if err := exec.Command("git", "commit", "-m", fmt.Sprintf("feat: add canvas %s as submodule", canvas)).Run(); err != nil {
+			fmt.Printf("Error committing submodule addition: %v\n", err)
+			return
+		}
+
+		fmt.Printf("Canvas '%s' initialized as submodule\n", canvas)
 	},
 }
 

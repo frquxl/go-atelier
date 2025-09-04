@@ -6,58 +6,72 @@
 
 ## Features
 - **Metaphor-Driven Interface**: Uses atelier/artist/canvas metaphors to make CLI interactions intuitive.
-- **Basic Project Scaffolding**: Creates a vanilla project structure with essential directories and boilerplate files.
-- **Version Control Integration**: Initializes a Git repository for basic version tracking.
-- **Template-Based Boilerplate Generation**: Generates README.md and GEMINI.md files in each directory from predefined templates.
+- **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
+- **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
+- **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
+- **Template-Based Boilerplate Generation**: Generates README.md and GEMINI.md files in each directory with contextual content.
 
 ## Commands
 
 ### atelier init
-- **Purpose**: Initializes a new atelier workspace with the complete directory structure.
+- **Purpose**: Initializes a new atelier workspace with 3-level Git submodule architecture.
 - **Usage**: `atelier-cli init <atelier-name> [<artist-name> <canvas-name>]`
 - **Functionality**:
-  - Creates directory `atelier-<atelier-name>` (required first argument).
+  - Creates directory `atelier-<atelier-name>` as main Git repository.
   - If no artist/canvas provided, defaults to `van-gogh` and `sunflowers`.
-  - Within it, generates the subdirectories: `artist-<artist-name>/canvas-example`.
-  - Initializes a Git repository in the atelier directory.
-  - Creates marker file `.atelier` in the root.
-  - Creates boilerplate files: `README.md` and `GEMINI.md` in each directory with contextual content.
-  - Creates marker files: `.artist` and `.canvas` in respective directories.
+  - Creates `artist-<artist-name>` as Git submodule of atelier.
+  - Creates `canvas-<canvas-name>` as Git submodule of artist.
+  - Sets up `.gitmodules` files to track submodule relationships.
+  - Creates marker files: `.atelier`, `.artist`, and `.canvas` in respective directories.
+  - Generates contextual README.md and GEMINI.md files at each level.
+  - Commits all changes with proper Git submodule setup.
 
 ### artist init
-- **Purpose**: Creates a new artist studio within an existing atelier.
+- **Purpose**: Creates a new artist studio as a Git submodule within an existing atelier.
 - **Usage**: `atelier-cli artist init <artist-name>`
 - **Functionality**:
   - Must be run from within an atelier directory (detects `.atelier` marker).
-  - Creates the subdirectory `artist-<artist-name>` if it doesn't exist.
-  - Within it, generates the subdirectory `canvas-example`.
+  - Creates `artist-<artist-name>` as Git repository with initial commit.
+  - Adds artist as submodule to parent atelier repository.
+  - Creates default `canvas-example` as submodule of the artist.
+  - Sets up `.gitmodules` file in artist to track canvas submodules.
   - Creates marker files: `.artist` and `.canvas` in respective directories.
-  - Creates boilerplate files: `README.md` and `GEMINI.md` in each directory with contextual content.
+  - Generates contextual README.md and GEMINI.md files.
+  - Commits submodule relationships to both atelier and artist repositories.
 
 ### canvas init
-- **Purpose**: Creates a new canvas within an existing artist studio.
+- **Purpose**: Creates a new canvas as a Git submodule within an existing artist studio.
 - **Usage**: `atelier-cli canvas init <canvas-name>`
 - **Functionality**:
   - Must be run from within an artist directory (detects `.artist` marker).
-  - Creates the subdirectory `canvas-<canvas-name>` if it doesn't exist.
+  - Creates `canvas-<canvas-name>` as Git repository with initial commit.
+  - Adds canvas as submodule to parent artist repository.
+  - Updates artist's `.gitmodules` file to track the new canvas.
   - Creates marker file `.canvas` in the canvas directory.
-  - Creates boilerplate files: `README.md` and `GEMINI.md` with contextual content.
+  - Generates contextual README.md and GEMINI.md files.
+  - Commits submodule relationship to artist repository.
   
   ## Project Structure
-  The skeleton structure created by `atelier-cli init`:
+  The 3-level Git submodule architecture created by `atelier-cli init`:
   
-  - `atelier-<name>/`: Root workspace directory (represents the artist's studio).
-    - `.atelier`: Marker file identifying this as an atelier root.
-    - `README.md`: Auto-generated readme with atelier overview.
-    - `GEMINI.md`: AI context file for the atelier.
-    - `artist-<name>/`: Artist workspace directory.
-      - `.artist`: Marker file identifying this as an artist workspace.
-      - `README.md`: Auto-generated readme for the artist.
-      - `GEMINI.md`: AI context file for the artist.
-      - `canvas-example/`: Default canvas directory (represents the project workspace).
-        - `.canvas`: Marker file identifying this as a canvas/project area.
-        - `README.md`: Auto-generated readme for the canvas.
-        - `GEMINI.md`: AI context file for the canvas.
+  - `atelier-<name>/`: **Main Git Repository** (atelier root)
+    - `.git/`: Atelier's Git repository
+    - `.gitmodules`: Tracks artist submodules
+    - `.atelier`: Marker file identifying this as an atelier root
+    - `README.md`: Atelier overview and project documentation
+    - `GEMINI.md`: AI context file for the atelier
+    - `artist-<name>/`: **Git Submodule** (artist workspace)
+      - `.git/`: Artist's Git repository (submodule)
+      - `.gitmodules`: Tracks canvas submodules
+      - `.artist`: Marker file identifying this as an artist workspace
+      - `README.md`: Artist-specific documentation
+      - `GEMINI.md`: AI context file for the artist
+      - `canvas-<name>/`: **Git Submodule** (project workspace)
+        - `.git/`: Canvas's Git repository (submodule)
+        - `.canvas`: Marker file identifying this as a canvas/project area
+        - `README.md`: Project-specific documentation
+        - `GEMINI.md`: AI context file for the canvas
+        - `src/`, `docs/`, etc.: Your actual project files
   
   ### Directory Markers
   - **`.atelier`**: Identifies atelier root directories
@@ -65,6 +79,39 @@
   - **`.canvas`**: Identifies canvas/project directories
   
   These marker files enable context-aware command execution and help prevent commands from running in incorrect directories.
+  
+  ## Git Submodule Management
+  
+  ### Understanding the 3-Level Architecture
+  - **Atelier Level**: Main repository tracking overall project structure
+  - **Artist Level**: Submodules of atelier, can contain multiple canvases
+  - **Canvas Level**: Submodules of artists, independent project repositories
+  
+  ### Working with Submodules
+  ```bash
+  # Clone entire atelier with all submodules
+  git clone --recursive https://github.com/user/atelier-myproject.git
+  
+  # Update all submodules to latest
+  git submodule update --init --recursive
+  
+  # Work on a specific canvas
+  cd artist-picasso/canvas-guernica
+  git checkout -b feature/new-feature
+  # Make changes...
+  git commit -m "feat: add new feature"
+  
+  # Update parent repositories
+  cd ../..  # Back to atelier
+  git add artist-picasso/canvas-guernica
+  git commit -m "feat: update guernica canvas"
+  ```
+  
+  ### Best Practices
+  - **Always commit submodule changes**: When you update a canvas, commit the new reference in the parent repository
+  - **Use recursive operations**: Clone with `--recursive` and update with `--recursive`
+  - **Keep submodules clean**: Each level should only track its own files
+  - **Version pinning**: Atelier can pin artists/canvases to specific versions
 
 ## Installation
 
@@ -132,6 +179,8 @@ Commands automatically detect their execution context:
 ### Code Organization
 - **Cobra CLI Framework**: Use idiomatic Go patterns with Cobra for command structure
 - **Command Separation**: Keep commands in separate files under `cmd/` directory
+- **3-Level Git Submodules**: Atelier → Artists → Canvases architecture for clean separation
+- **Automatic Submodule Management**: CLI handles complex Git submodule setup automatically
 - **Template Generation**: Built-in default content generation (no external files needed)
 - **Error Handling**: Context-aware error messages with helpful suggestions
 - **Marker Files**: Use `.atelier`, `.artist`, `.canvas` files for directory context detection
@@ -152,8 +201,10 @@ Commands automatically detect their execution context:
 
 ### CLI Design Patterns
 - **Context Awareness**: Commands validate execution context using marker files
+- **3-Level Submodule Architecture**: Automatic Git submodule setup and management
 - **Helpful Errors**: Error messages include available options and next steps
 - **Consistent Naming**: `atelier-<name>`, `artist-<name>`, `canvas-<name>` format
 - **Default Values**: Sensible defaults (van-gogh/sunflowers) for quick starts
 - **Template Content**: Auto-generated contextual content for README/GEMINI files
+- **Submodule Workflow**: CLI handles complex Git submodule relationships transparently
 
