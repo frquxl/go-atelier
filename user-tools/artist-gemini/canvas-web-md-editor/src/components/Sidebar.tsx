@@ -49,7 +49,7 @@ export default function Sidebar({ onFileSelect }: { onFileSelect: (filepath: str
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
           placeholder="Enter public repo URL"
-          className="w-full p-2 border border-gray-300 rounded-md mb-2 text-sm"
+          className="w-full p-2 border border-gray-300 rounded-md mb-2 text-sm text-gray-900" // Added text-gray-900
           disabled={isLoading}
         />
         <button
@@ -70,7 +70,7 @@ export default function Sidebar({ onFileSelect }: { onFileSelect: (filepath: str
           value={pat}
           onChange={(e) => setPat(e.target.value)}
           placeholder="GitHub Personal Access Token"
-          className="w-full p-2 border border-gray-300 rounded-md mb-2 text-sm"
+          className="w-full p-2 border border-gray-300 rounded-md mb-2 text-sm text-gray-900" // Added text-gray-900
           disabled={isPushing}
         />
         <button

@@ -1,80 +1,82 @@
-# Project Canvas
+# Project Canvas: Web Markdown Editor
 
 Welcome to your Project Canvas! 🖼️
 
-This is your actual development workspace - a complete, independent software project with its own Git repository.
+This is your actual development workspace - a complete, independent software project for a web-based markdown editor.
 
 ## 🎯 Project Overview
 
-**Project canvases** are self-contained software projects within the atelier/artist/canvas architecture. Each canvas:
-- Has its own independent Git repository
-- Can be developed, tested, and deployed separately
-- Maintains its own dependencies and configurations
-- Is organized thematically within an artist workspace
+This canvas is dedicated to building a **Progressive Web App (PWA)** that allows users to edit markdown files directly from their web browser, especially on mobile devices. It aims to provide a simple, intuitive interface for managing documentation within Git repositories.
 
 ## 📁 Project Structure
 
 ```
-canvas/
-├── .git/                    # Independent Git repository
-├── README.md               # This project documentation
-├── GEMINI.md               # AI pair programming context
-├── src/                    # Source code directory
-├── tests/                  # Test files and test suites
-├── docs/                   # Project documentation
-├── .gitignore              # Git ignore patterns
-└── [project-specific files]
+web-app/
+├── public/                  # Static assets (images, favicons)
+├── src/                     # Application source code
+│   ├── app/                 # Next.js App Router pages and layouts
+│   ├── components/          # Reusable React components (Header, Sidebar)
+│   └── lib/                 # Utility functions (Git service)
+├── node_modules/            # Project dependencies
+├── package.json             # Project metadata and dependencies (React, Next.js, isomorphic-git)
+├── next.config.ts           # Next.js configuration
+├── tsconfig.json            # TypeScript configuration
+├── .gitignore               # Git ignore patterns
+└── [other project-specific files]
 ```
 
 ## 🚀 Getting Started
 
-1. **Set up your environment**: Install dependencies, configure tools
-2. **Explore the codebase**: Review existing code and documentation
-3. **Start developing**: Add features, fix bugs, write tests
-4. **Commit regularly**: `git add . && git commit -m "feat: your changes"`
+1.  **Navigate to the canvas**: `cd user-tools/artist-gemini/canvas-web-md-editor`
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Start the development server**:
+    ```bash
+    npm run dev
+    # Or using make: make web-dev
+    ```
+    Open your browser to `http://localhost:3000` (or the address shown in the terminal).
+4.  **Explore the codebase**: Review `src/app/page.tsx`, `src/components/`, and `src/lib/git.ts`.
+5.  **Start developing**: Implement new features, refine the UI, and add tests.
+6.  **Commit regularly**: `git add . && git commit -m "feat: your changes"`
 
 ## 🔧 Development Guidelines
 
 ### Code Organization
-- Keep source code in `src/` directory
-- Place tests in `tests/` directory
-- Use `docs/` for project documentation
-- Follow your team's coding standards
+-   **Next.js App Router**: Pages and layouts are defined under `src/app/`.
+-   **React Components**: Reusable UI components are in `src/components/`.
+-   **Git Service**: All `isomorphic-git` related logic is encapsulated in `src/lib/git.ts`.
+-   **Styling**: Uses Tailwind CSS for utility-first styling.
 
 ### Git Workflow
-- **Independent repository**: This canvas has its own Git history
-- **Regular commits**: Commit early and often
-- **Descriptive messages**: Use clear commit messages
-- **Branch strategy**: Use feature branches for new work
+-   **In-browser Git**: This project uses `isomorphic-git` to perform Git operations directly within the browser's `IndexedDB`.
+-   **Commit Locally**: Changes are committed to the in-browser Git repository.
+-   **Push to Remote**: Use the "Push" functionality in the app to synchronize changes with the remote repository.
 
 ### Best Practices
-- ✅ Write tests for new features
-- ✅ Update documentation as you go
-- ✅ Keep dependencies up to date
-- ✅ Follow security best practices
-- ✅ Review code before committing
+-   ✅ **Client-Side Only**: Ensure all `isomorphic-git` and `lightningfs` operations are strictly client-side to avoid server-side rendering issues.
+-   ✅ **Secure Authentication**: For production, replace PATs with a robust OAuth flow.
+-   ✅ **Responsive Design**: Ensure the UI is optimized for mobile and tablet screens.
+-   ✅ **PWA Features**: Implement service workers and manifest for installability and offline capabilities.
 
 ## 🎯 Project Goals
 
-*What is this project trying to achieve?*
-
-*What technologies and frameworks are you using?*
-
-*Who is the target audience?*
-
-*What are the success criteria?*
+*   **Primary Goal**: Enable users to edit markdown files within Git repositories directly from a web browser, especially on mobile devices.
+*   **Key Features**: Repository cloning, file navigation, markdown editing, local commits, and remote pushing.
+*   **Target Audience**: Users of `atelier-cli` who need a convenient way to manage documentation on the go.
+*   **Success Criteria**: A simple, reliable, and user-friendly web application that fulfills the core editing and Git synchronization needs.
 
 ## 🤝 Contributing
 
-*How should others contribute to this project?*
-
-*What are the coding standards and conventions?*
-
-*How do you want to collaborate?*
+*   **Contribution Guidelines**: Follow standard web development practices for React/Next.js.
+*   **Coding Standards**: Adhere to ESLint and TypeScript guidelines configured in the project.
+*   **Collaboration**: Use Git for version control, commit messages should follow conventional commits (e.g., `feat(editor): add new feature`).
 
 ## 📚 Documentation
 
-- **README.md**: Human-readable project guide (this file)
-- **GEMINI.md**: AI pair programming context and patterns
+-   **README.md**: Human-readable project guide (this file).
+-   **GEMINI.md**: AI pair programming context and patterns for this specific canvas.
 
 Happy coding! 🚀✨

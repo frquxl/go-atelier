@@ -45,6 +45,17 @@ export const cloneRepo = async (url: string) => {
     singleBranch: true,
     depth: 1,
   });
+
+  // After cloning, verify that there's at least one commit
+  // If not, the clone might have failed or the repo is empty
+  try {
+    const commits = await git.log({ fs, dir, depth: 1 });
+    if (commits.length === 0) {
+      throw new Error('Cloned repository has no commits. It might be empty or the clone failed.');
+    }
+  } catch (e: any) {
+    throw new Error(`Failed to verify cloned repository: ${e.message}`);
+  }
 };
 
 export const listFiles = async () => {
