@@ -115,6 +115,7 @@ assert_dir_exists "$EXPECTED_ATELIER"
 assert_file_exists "$EXPECTED_ATELIER/.atelier"
 assert_file_exists "$EXPECTED_ATELIER/README.md"
 assert_file_exists "$EXPECTED_ATELIER/GEMINI.md"
+assert_file_exists "$EXPECTED_ATELIER/Makefile"
 assert_file_exists "$EXPECTED_ATELIER/.gitignore"
 assert_file_exists "$EXPECTED_ATELIER/.geminiignore"
 assert_file_exists "$EXPECTED_ATELIER/.gitmodules"
@@ -258,7 +259,7 @@ log_info "Test 7: Verifying complete directory structure..."
 atelier_files=$(find "$EXPECTED_ATELIER" -type f | wc -l)
 atelier_dirs=$(find "$EXPECTED_ATELIER" -type d | wc -l)
 
-if [[ $atelier_files -ge 16 ]]; then
+if [[ $atelier_files -ge 17 ]]; then
     log_success "Atelier has expected number of files ($atelier_files)"
 else
     log_error "Atelier has too few files ($atelier_files)"

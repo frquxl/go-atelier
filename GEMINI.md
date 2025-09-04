@@ -9,7 +9,7 @@
 - **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
 - **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
 - **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
-- **Embedded Template System**: Generates README.md, GEMINI.md, .gitignore, and .geminiignore files from templates embedded in the binary.
+- **Embedded Template System**: Generates README.md, GEMINI.md, Makefile, .gitignore, and .geminiignore files from templates embedded in the binary.
 
 ## Commands
 
@@ -60,6 +60,7 @@
     - `.atelier`: Marker file identifying this as an atelier root
     - `README.md`: Atelier overview and project documentation
     - `GEMINI.md`: AI context file for the atelier
+    - `Makefile`: Build and development automation (customizable)
     - `.gitignore`: Git ignore patterns for the atelier
     - `.geminiignore`: AI context ignore patterns for the atelier
     - `artist-<name>/`: **Git Submodule** (artist workspace)
@@ -214,6 +215,6 @@ Commands automatically detect their execution context:
 - **Helpful Errors**: Error messages include available options and next steps
 - **Consistent Naming**: `atelier-<name>`, `artist-<name>`, `canvas-<name>` format
 - **Default Values**: Sensible defaults (van-gogh/sunflowers) for quick starts
-- **Template Content**: Auto-generated contextual content for README.md, GEMINI.md, .gitignore, and .geminiignore files
+- **Template Content**: Auto-generated contextual content for README.md, GEMINI.md, Makefile, .gitignore, and .geminiignore files
 - **Submodule Workflow**: CLI handles complex Git submodule relationships transparently
 
