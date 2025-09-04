@@ -226,33 +226,33 @@ func createBoilerplateFiles(dirs ...string) {
 }
 
 func getTemplateType(dir string) string {
+	// Normalize relative paths like "." or ".." to absolute, so Base resolves correctly
+	if abs, err := filepath.Abs(dir); err == nil {
+		dir = abs
+	}
 	baseName := filepath.Base(dir)
 
-	// Handle current directory case
-	if baseName == "." {
-		cwd, err := os.Getwd()
-		if err == nil {
-			baseName = filepath.Base(cwd)
-		}
-	}
-
 	// Check for exact prefix matches in priority order
+	// Canvas first (most specific)
 	if strings.HasPrefix(baseName, "canvas-") {
 		return "canvas"
 	}
+	// Artist second
 	if strings.HasPrefix(baseName, "artist-") {
 		return "artist"
 	}
+	// Atelier last (least specific)
 	if strings.HasPrefix(baseName, "atelier-") {
 		return "atelier"
 	}
 
 	// For directories that don't have standard prefixes,
 	// check if they contain atelier/artist/canvas keywords
-	if strings.Contains(baseName, "canvas") {
+	// Check in reverse order to avoid false positives
+	if strings.Contains(baseName, "canvas") && !strings.Contains(baseName, "artist") && !strings.Contains(baseName, "atelier") {
 		return "canvas"
 	}
-	if strings.Contains(baseName, "artist") {
+	if strings.Contains(baseName, "artist") && !strings.Contains(baseName, "atelier") {
 		return "artist"
 	}
 	if strings.Contains(baseName, "atelier") {
