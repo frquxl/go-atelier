@@ -1,39 +1,55 @@
 "use client";
 
 import { useState } from "react";
-import { cloneRepo, listFiles } from "@/lib/git";
+import { cloneRepo, listFiles, pushChanges } from "@/lib/git";
 
 export default function Sidebar({ onFileSelect }: { onFileSelect: (filepath: string) => void }) {
   const [repoUrl, setRepoUrl] = useState("");
+  const [pat, setPat] = useState(""); // Personal Access Token
   const [files, setFiles] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPushing, setIsPushing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleClone = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setFiles([]);
     try {
       await cloneRepo(repoUrl);
       const fileList = await listFiles();
       setFiles(fileList);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred.");
+      setError(err instanceof Error ? err.message : "An unknown error occurred during clone.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handlePush = async () => {
+    setIsPushing(true);
+    setError(null);
+    try {
+      await pushChanges(pat);
+      alert("Changes pushed successfully!");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred during push.");
+    } finally {
+      setIsPushing(false);
+    }
+  };
+
   return (
-    <aside className="w-64 bg-gray-100 p-4 border-r border-gray-200 flex flex-col">
+    <aside className="w-72 bg-gray-100 p-4 border-r border-gray-200 flex flex-col">
       <h2 className="text-lg font-semibold mb-4">Repository</h2>
-      <form onSubmit={handleClone}>
+      <form onSubmit={handleClone} className="mb-4">
         <input
           type="text"
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
           placeholder="Enter public repo URL"
-          className="w-full p-2 border border-gray-300 rounded-md mb-2"
+          className="w-full p-2 border border-gray-300 rounded-md mb-2 text-sm"
           disabled={isLoading}
         />
         <button
@@ -44,6 +60,28 @@ export default function Sidebar({ onFileSelect }: { onFileSelect: (filepath: str
           {isLoading ? "Cloning..." : "Clone"}
         </button>
       </form>
+
+      <hr className="my-4" />
+
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold mb-2">Push Changes</h2>
+        <input
+          type="password"
+          value={pat}
+          onChange={(e) => setPat(e.target.value)}
+          placeholder="GitHub Personal Access Token"
+          className="w-full p-2 border border-gray-300 rounded-md mb-2 text-sm"
+          disabled={isPushing}
+        />
+        <button
+          onClick={handlePush}
+          className="w-full bg-green-500 text-white p-2 rounded-md hover:bg-green-600 disabled:bg-gray-400"
+          disabled={isPushing || files.length === 0}
+        >
+          {isPushing ? "Pushing..." : "Push"}
+        </button>
+      </div>
+
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
       
       <hr className="my-4" />
