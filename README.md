@@ -34,6 +34,15 @@ The installation script automates the process:
 ./install.sh
 ```
 
+### Alternative: Using Makefile
+
+For a quick installation using the Makefile:
+
+```bash
+# Install globally
+make install
+```
+
 ### Alternative: Local Build
 
 ```bash
