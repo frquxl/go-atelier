@@ -16,7 +16,7 @@ fi
 
 # Build and install
 echo "📦 Building and installing atelier-cli..."
-go install .
+go install -ldflags "-X 'atelier-cli/cmd.version=$(git describe --tags --abbrev=0 2>/dev/null || echo dev)'" .
 
 # Check if installation was successful
 if command -v atelier-cli &> /dev/null; then
