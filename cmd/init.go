@@ -8,6 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	createSketchArtist bool
+	createGalleryArtist bool
+)
+
 var initCmd = &cobra.Command{
 	Use:   "init <atelier-name> [<artist-name> <canvas-name>]",
 	Short: "Initialize a new atelier workspace",
@@ -40,9 +45,23 @@ If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 			return err // Error is already formatted and cleanup is handled by the engine
 		}
 
-		// 2. Create the Artist and default Canvas
+		// 2. Create the primary Artist and default Canvas
 		if err = engine.CreateArtist(atelierPath, artistName, canvasName); err != nil {
 			return err // Error is already formatted and cleanup is handled by the engine
+		}
+
+		// 3. Create additional artists if flags are set
+		if createSketchArtist {
+			fmt.Println("Creating additional 'sketch' artist...")
+			if err := engine.CreateArtist(atelierPath, "sketch", "example"); err != nil {
+				return err
+			}
+		}
+		if createGalleryArtist {
+			fmt.Println("Creating additional 'gallery' artist...")
+			if err := engine.CreateArtist(atelierPath, "gallery", "example"); err != nil {
+				return err
+			}
 		}
 
 		fmt.Printf("Atelier '%s' initialized successfully!\n", atelierBaseName)
@@ -56,4 +75,8 @@ If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 
 func init() {
 	RootCmd.AddCommand(initCmd)
+
+	// Add flags for additional artists
+	initCmd.Flags().BoolVar(&createSketchArtist, "sketch", false, "Create a default 'sketch' artist workspace.")
+	initCmd.Flags().BoolVar(&createGalleryArtist, "gallery", false, "Create a default 'gallery' artist workspace.")
 }

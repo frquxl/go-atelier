@@ -14,12 +14,12 @@
 
 ### atelier init
 - **Purpose**: Initializes a new atelier workspace with 3-level Git submodule architecture.
-- **Usage**: `atelier-cli init <atelier-name> [<artist-name> <canvas-name>]`
+- **Usage**: `atelier-cli init <atelier-name> [<artist-name> <canvas-name>] [--sketch] [--gallery]`
 - **Functionality**:
   - Creates directory `atelier-<atelier-name>` as main Git repository.
   - If no artist/canvas provided, defaults to `van-gogh` and `sunflowers`.
-  - Creates `artist-<artist-name>` as Git submodule of atelier.
-  - Creates `canvas-<canvas-name>` as Git submodule of artist.
+  - If `--sketch` flag is used, also creates `artist-sketch` with a default `canvas-example`.
+  - If `--gallery` flag is used, also creates `artist-gallery` with a default `canvas-example`.
   - Sets up `.gitmodules` files to track submodule relationships.
   - Creates marker files: `.atelier`, `.artist`, and `.canvas` in respective directories.
   - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files at each level.

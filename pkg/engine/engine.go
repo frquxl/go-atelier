@@ -72,7 +72,16 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
 		return err
 	}
-	if err = templates.CreateBoilerplate(artistPath, "artist"); err != nil {
+
+	// Determine which template to use based on artistName
+	templateType := "artist-default"
+	if artistName == "sketch" {
+		templateType = "artist-sketch"
+	} else if artistName == "gallery" {
+		templateType = "artist-gallery"
+	}
+
+	if err = templates.CreateBoilerplate(artistPath, templateType); err != nil {
 		return err
 	}
 	if err = gitutil.Add(artistPath); err != nil {

@@ -37,6 +37,14 @@ atelier-cli --version
 ```bash
 # Create a new atelier with default artist (van-gogh) and canvas (sunflowers)
 atelier-cli init my-project
+
+# Create an atelier with additional default artists
+atelier-cli init my-project --sketch --gallery
+# This will create 'artist-van-gogh', 'artist-sketch', and 'artist-gallery'
+
+# Create an atelier with a custom primary artist and additional default artists
+atelier-cli init my-project picasso guernica --sketch
+# This will create 'artist-picasso' (with 'canvas-guernica') and 'artist-sketch' (with 'canvas-example')
 ```
 
 ### Add a New Artist
