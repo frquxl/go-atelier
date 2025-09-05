@@ -16,6 +16,7 @@ canvas/
 ├── .git/                    # Independent Git repository
 ├── README.md               # Human project documentation
 ├── GEMINI.md               # AI context (this file)
+├── Makefile                # Build and development tasks
 ├── src/                    # Source code
 ├── tests/                  # Test files
 ├── docs/                   # Documentation
