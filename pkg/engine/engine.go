@@ -39,7 +39,14 @@ func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err er
 		return "", err
 	}
 	// An initial commit is needed before adding submodules.
-	if err = gitutil.Add(atelierPath); err != nil {
+	if err = gitutil.AddPaths(atelierPath, existingPaths(atelierPath, []string{
+		".atelier",
+		"README.md",
+		"GEMINI.md",
+		"Makefile",
+		".gitignore",
+		".geminiignore",
+	})...); err != nil {
 		return "", err
 	}
 	if err = gitutil.Commit(atelierPath, fmt.Sprintf("feat: initialize atelier %s", atelierBaseName)); err != nil {
@@ -88,7 +95,14 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 		return err
 	}
 	// Stage changes (marker + boilerplate)
-	if err = gitutil.Add(artistPath); err != nil {
+	if err = gitutil.AddPaths(artistPath, existingPaths(artistPath, []string{
+		".artist",
+		"README.md",
+		"GEMINI.md",
+		"Makefile",
+		".gitignore",
+		".geminiignore",
+	})...); err != nil {
 		return err
 	}
 	if err = gitutil.Commit(artistPath, fmt.Sprintf("feat: initialize artist %s", artistName)); err != nil {
@@ -106,7 +120,7 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 		return err
 	}
 	// Stage .gitmodules and submodule path
-	if err = gitutil.Add(atelierPath); err != nil {
+	if err = gitutil.AddPaths(atelierPath, ".gitmodules", artistDirName); err != nil {
 		return err
 	}
 	if err = gitutil.Commit(atelierPath, fmt.Sprintf("feat: add artist %s as submodule", artistName)); err != nil {
@@ -156,7 +170,14 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 		return err
 	}
 	// Stage changes (marker + boilerplate)
-	if err = gitutil.Add(canvasPath); err != nil {
+	if err = gitutil.AddPaths(canvasPath, existingPaths(canvasPath, []string{
+		".canvas",
+		"README.md",
+		"GEMINI.md",
+		"Makefile",
+		".gitignore",
+		".geminiignore",
+	})...); err != nil {
 		return err
 	}
 	if err = gitutil.Commit(canvasPath, fmt.Sprintf("feat: initialize canvas %s", canvasName)); err != nil {
@@ -169,7 +190,7 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 		return err
 	}
 	// Stage .gitmodules and the submodule path
-	if err = gitutil.Add(artistPath); err != nil {
+	if err = gitutil.AddPaths(artistPath, ".gitmodules", canvasDirName); err != nil {
 		return err
 	}
 	if err = gitutil.Commit(artistPath, fmt.Sprintf("feat: add canvas %s as submodule", canvasName)); err != nil {
@@ -241,4 +262,16 @@ func DeleteCanvas(artistPath, canvasFullName string) (err error) {
 	// No automatic commit here. User is responsible for committing the changes.
 	fmt.Printf("Canvas '%s' deleted. Remember to 'git add %s' and 'git commit' in the parent repository.\n", canvasFullName, canvasFullName)
 	return nil
+}
+
+// existingPaths returns only those names that currently exist under base.
+// It prevents staging non-existent files when generating boilerplate.
+func existingPaths(base string, names []string) []string {
+	out := []string{}
+	for _, n := range names {
+		if _, err := os.Stat(filepath.Join(base, n)); err == nil {
+			out = append(out, n)
+		}
+	}
+	return out
 }

@@ -31,6 +31,15 @@ func Add(dir string) error {
 	return RunGitCommand(dir, "add", ".")
 }
 
+// AddPaths stages specific paths in the given directory.
+func AddPaths(dir string, paths ...string) error {
+	if len(paths) == 0 {
+		return nil
+	}
+	args := append([]string{"add", "--"}, paths...)
+	return RunGitCommand(dir, args...)
+}
+
 // Commit creates a commit with the given message in the directory.
 func Commit(dir, message string) error {
 	return RunGitCommand(dir, "commit", "-m", message)
