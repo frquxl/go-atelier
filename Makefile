@@ -46,7 +46,7 @@ deps:
 install:
 	@echo "Building $(BINARY_NAME) with version $(VERSION) and installing globally"
 	go build $(LDFLAGS) -o $(BINARY_NAME) .
-	cp $(BINARY_NAME) $(shell go env GOBIN)/
+	cp $(BINARY_NAME) $(shell go env GOPATH)/bin/
 
 # Build and test
 all: fmt vet test build
