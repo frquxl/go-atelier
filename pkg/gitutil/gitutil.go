@@ -1,9 +1,11 @@
 package gitutil
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // RunGitCommand executes a git command in a specified directory.
@@ -19,6 +21,19 @@ func RunGitCommand(dir string, args ...string) error {
 		return fmt.Errorf("git command failed (%v) in %s: %w", args, dir, err)
 	}
 	return nil
+}
+
+// RunGitCommandOutput executes a git command and returns stdout as string (stderr included in errors).
+func RunGitCommandOutput(dir string, args ...string) (string, error) {
+	cmd := exec.Command("git", args...)
+	cmd.Dir = dir
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("git command failed (%v) in %s: %s: %w", args, dir, strings.TrimSpace(stderr.String()), err)
+	}
+	return stdout.String(), nil
 }
 
 // Init initializes a new Git repository in the given directory.
@@ -60,4 +75,14 @@ func SubmoduleDeinit(parentDir, submodulePath string) error {
 // It performs a `git rm` which removes from index, .gitmodules, and work tree.
 func Remove(parentDir, submodulePath string) error {
 	return RunGitCommand(parentDir, "rm", submodulePath)
+}
+
+// IsPathDirty reports whether the given path has local modifications in repo at dir.
+// It checks only the specified path (e.g., a submodule directory) via porcelain output.
+func IsPathDirty(dir, path string) (bool, error) {
+	out, err := RunGitCommandOutput(dir, "status", "--porcelain", "--", path)
+	if err != nil {
+		return false, err
+	}
+	return strings.TrimSpace(out) != "", nil
 }

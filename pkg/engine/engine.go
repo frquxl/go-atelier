@@ -212,6 +212,13 @@ func DeleteArtist(atelierPath, artistFullName string) (err error) {
 
 	fmt.Printf("Deleting artist %s...\n", artistFullName)
 
+	// Ensure the submodule path has no local modifications before proceeding
+	if dirty, derr := gitutil.IsPathDirty(atelierPath, artistFullName); derr != nil {
+		return fmt.Errorf("failed to check git status for %s: %w", artistFullName, derr)
+	} else if dirty {
+		return fmt.Errorf("cannot delete '%s': uncommitted changes exist in this submodule path. Please commit, stash, or discard changes, then retry.", artistFullName)
+	}
+
 	// 1. Deinitialize the submodule
 	if err = gitutil.SubmoduleDeinit(atelierPath, artistFullName); err != nil {
 		return fmt.Errorf("failed to deinitialize artist submodule: %w", err)
@@ -243,6 +250,13 @@ func DeleteCanvas(artistPath, canvasFullName string) (err error) {
 	}()
 
 	fmt.Printf("Deleting canvas %s...\n", canvasFullName)
+
+	// Ensure the submodule path has no local modifications before proceeding
+	if dirty, derr := gitutil.IsPathDirty(artistPath, canvasFullName); derr != nil {
+		return fmt.Errorf("failed to check git status for %s: %w", canvasFullName, derr)
+	} else if dirty {
+		return fmt.Errorf("cannot delete '%s': uncommitted changes exist in this submodule path. Please commit, stash, or discard changes, then retry.", canvasFullName)
+	}
 
 	// 1. Deinitialize the submodule
 	if err = gitutil.SubmoduleDeinit(artistPath, canvasFullName); err != nil {
