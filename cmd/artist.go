@@ -27,11 +27,13 @@ var artistInitCmd = &cobra.Command{
 	Long:  `Initialize a new artist studio within the existing atelier as a Git submodule.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		// Check if we're in an atelier directory
-		if _, statErr := os.Stat(".atelier"); os.IsNotExist(statErr) {
+		// Check if we're in an atelier directory and read atelier name
+		atelierContent, statErr := os.ReadFile(".atelier")
+		if statErr != nil {
 			listAvailableAteliers()
 			return fmt.Errorf("not in an atelier directory. See available ateliers above")
 		}
+		atelierName := strings.TrimSpace(string(atelierContent))
 
 		artistName := args[0]
 		canvasName := "example"
@@ -64,7 +66,9 @@ var artistInitCmd = &cobra.Command{
 		if err = gitutil.Init(artistPath); err != nil {
 			return err
 		}
-		if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistName)); err != nil {
+		// Write artist context with atelier information
+		artistContext := fmt.Sprintf("%s\n%s", atelierName, artistName)
+		if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
 			return err
 		}
 		if err = createArtistBoilerplate(artistPath, "artist"); err != nil {
@@ -85,7 +89,9 @@ var artistInitCmd = &cobra.Command{
 		if err = gitutil.Init(canvasPath); err != nil {
 			return err
 		}
-		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasName)); err != nil {
+		// Write canvas context with atelier and artist information
+		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistName, canvasName)
+		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 			return err
 		}
 		if err = createArtistBoilerplate(canvasPath, "canvas"); err != nil {

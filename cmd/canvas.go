@@ -27,11 +27,20 @@ var canvasInitCmd = &cobra.Command{
 	Long:  `Initialize a new canvas within the current artist workspace as a Git submodule. Must be run from an artist directory.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		// Check if we're in an artist directory
-		if _, statErr := os.Stat(".artist"); os.IsNotExist(statErr) {
+		// Check if we're in an artist directory and read artist context
+		artistContent, statErr := os.ReadFile(".artist")
+		if statErr != nil {
 			listAvailableArtists()
 			return fmt.Errorf("not in an artist directory. See available artists above")
 		}
+
+		// Parse artist context (atelier\nartist)
+		artistLines := strings.Split(strings.TrimSpace(string(artistContent)), "\n")
+		if len(artistLines) < 2 {
+			return fmt.Errorf("invalid .artist file format")
+		}
+		atelierName := artistLines[0]
+		artistName := artistLines[1]
 
 		canvasName := args[0]
 		canvasDirName := "canvas-" + canvasName
@@ -60,7 +69,9 @@ var canvasInitCmd = &cobra.Command{
 		if err = gitutil.Init(canvasPath); err != nil {
 			return err
 		}
-		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasName)); err != nil {
+		// Write canvas context with atelier and artist information
+		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistName, canvasName)
+		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 			return err
 		}
 		if err = createCanvasBoilerplate(canvasPath, "canvas"); err != nil {
