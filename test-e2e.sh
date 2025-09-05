@@ -122,7 +122,7 @@ assert_file_exists "$EXPECTED_ATELIER/.gitmodules"
 assert_git_repo "$EXPECTED_ATELIER"
 
 # Check atelier content
-assert_file_contains "$EXPECTED_ATELIER/.atelier" "test-workspace"
+assert_file_contains "$EXPECTED_ATELIER/.atelier" "atelier-test-workspace"
 assert_file_contains "$EXPECTED_ATELIER/README.md" "Atelier Workspace"
 assert_file_contains "$EXPECTED_ATELIER/GEMINI.md" "Atelier AI Context"
 
@@ -143,7 +143,8 @@ assert_file_exists "$EXPECTED_ARTIST/.gitmodules"
 assert_git_repo "$EXPECTED_ARTIST"
 
 # Check artist content
-assert_file_contains "$EXPECTED_ARTIST/.artist" "test-artist"
+assert_file_contains "$EXPECTED_ARTIST/.artist" "atelier-test-workspace"
+assert_file_contains "$EXPECTED_ARTIST/.artist" "artist-test-artist"
 assert_file_contains "$EXPECTED_ARTIST/README.md" "Artist Workspace"
 assert_file_contains "$EXPECTED_ARTIST/GEMINI.md" "Artist AI Context"
 
@@ -166,7 +167,9 @@ assert_file_exists "$EXPECTED_CANVAS/Makefile"
 assert_git_repo "$EXPECTED_CANVAS"
 
 # Check canvas content
-assert_file_contains "$EXPECTED_CANVAS/.canvas" "test-canvas"
+assert_file_contains "$EXPECTED_CANVAS/.canvas" "atelier-test-workspace"
+assert_file_contains "$EXPECTED_CANVAS/.canvas" "artist-test-artist"
+assert_file_contains "$EXPECTED_CANVAS/.canvas" "canvas-test-canvas"
 assert_file_contains "$EXPECTED_CANVAS/README.md" "Project Canvas"
 assert_file_contains "$EXPECTED_CANVAS/GEMINI.md" "Canvas AI Context"
 
@@ -235,8 +238,25 @@ assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/README.md" "👨‍🎨
 assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/$EXPECTED_CANVAS/README.md" "🎯 Project Overview"
 assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/$EXPECTED_CANVAS/README.md" "🖼️"
 
-# Test 7: Directory structure completeness
-log_info "Test 7: Verifying complete directory structure..."
+# Test 7: Hierarchical context in marker files
+log_info "Test 7: Verifying hierarchical context in marker files..."
+
+# Verify .atelier contains full directory name
+assert_file_contains "$EXPECTED_ATELIER/.atelier" "atelier-test-workspace"
+
+# Verify .artist contains full hierarchy
+assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/.artist" "atelier-test-workspace"
+assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/.artist" "artist-test-artist"
+
+# Verify .canvas contains complete hierarchy
+assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/$EXPECTED_CANVAS/.canvas" "atelier-test-workspace"
+assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/$EXPECTED_CANVAS/.canvas" "artist-test-artist"
+assert_file_contains "$EXPECTED_ATELIER/$EXPECTED_ARTIST/$EXPECTED_CANVAS/.canvas" "canvas-test-canvas"
+
+log_success "Hierarchical context properly stored in all marker files"
+
+# Test 8: Directory structure completeness
+log_info "Test 8: Verifying complete directory structure..."
 
 # Expected structure:
 # atelier-test-workspace/
@@ -294,6 +314,7 @@ echo "  ✅ Git repositories properly initialized"
 echo "  ✅ Submodule relationships correct"
 echo "  ✅ Context-aware commands work"
 echo "  ✅ Templates generate correct content"
+echo "  ✅ Hierarchical context in marker files"
 echo "  ✅ All files and directories created"
 echo ""
 log_info "The Atelier CLI tested just fine! 🚀"
