@@ -1,9 +1,7 @@
 package cmd
 
 import (
-	"atelier-cli/pkg/fs"
-	"atelier-cli/pkg/gitutil"
-	"embed"
+	"atelier-cli/pkg/engine"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,9 +9,6 @@ import (
 
 	"github.com/spf13/cobra"
 )
-
-//go:embed templates/*
-var artistTemplatesFS embed.FS
 
 var artistCmd = &cobra.Command{
 	Use:   "artist",
@@ -27,19 +22,14 @@ var artistInitCmd = &cobra.Command{
 	Long:  `Initialize a new artist studio within the existing atelier as a Git submodule.`,
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		// Check if we're in an atelier directory and read atelier name
-		atelierContent, statErr := os.ReadFile(".atelier")
-		if statErr != nil {
+		// Check if we're in an atelier directory
+		if _, err := os.Stat(".atelier"); os.IsNotExist(err) {
 			listAvailableAteliers()
 			return fmt.Errorf("not in an atelier directory. See available ateliers above")
 		}
-		atelierName := strings.TrimSpace(string(atelierContent))
 
 		artistName := args[0]
-		canvasName := "example"
-
-		artistDirName := "artist-" + artistName
-		canvasDirName := "canvas-" + canvasName
+		canvasName := "example" // Artists are created with a default example canvas
 
 		// Get current working directory to construct absolute paths
 		atelierPath, err := os.Getwd()
@@ -47,144 +37,13 @@ var artistInitCmd = &cobra.Command{
 			return fmt.Errorf("could not get current working directory: %w", err)
 		}
 
-		artistPath := filepath.Join(atelierPath, artistDirName)
-		canvasPath := filepath.Join(artistPath, canvasDirName)
-
-		// Cleanup on failure
-		defer func() {
-			if err != nil {
-				fmt.Printf("Initialization failed, cleaning up directory: %s\n", artistPath)
-				os.RemoveAll(artistPath)
-			}
-		}()
-
-		// 1. Create and initialize Artist (as a standalone repo first)
-		fmt.Println("Initializing artist...")
-		if err = fs.CreateDir(artistPath); err != nil {
-			return err
-		}
-		if err = gitutil.Init(artistPath); err != nil {
-			return err
-		}
-		// Write artist context with atelier information
-		artistContext := fmt.Sprintf("%s\n%s", atelierName, artistDirName)
-		if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
-			return err
-		}
-		if err = createArtistBoilerplate(artistPath, "artist"); err != nil {
-			return err
-		}
-		if err = gitutil.Add(artistPath); err != nil {
-			return err
-		}
-		if err = gitutil.Commit(artistPath, fmt.Sprintf("feat: initialize artist %s", artistName)); err != nil {
-			return err
-		}
-
-		// 2. Create and initialize default Canvas
-		fmt.Println("Initializing default canvas...")
-		if err = fs.CreateDir(canvasPath); err != nil {
-			return err
-		}
-		if err = gitutil.Init(canvasPath); err != nil {
-			return err
-		}
-		// Write canvas context with atelier and artist information
-		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistDirName, canvasDirName)
-		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
-			return err
-		}
-		if err = createArtistBoilerplate(canvasPath, "canvas"); err != nil {
-			return err
-		}
-		if err = gitutil.Add(canvasPath); err != nil {
-			return err
-		}
-		if err = gitutil.Commit(canvasPath, fmt.Sprintf("feat: initialize canvas %s", canvasName)); err != nil {
-			return err
-		}
-
-		// 3. Link canvas to artist
-		fmt.Println("Connecting canvas to artist...")
-		if err = gitutil.AddSubmodule(artistPath, canvasDirName); err != nil {
-			return err
-		}
-		if err = gitutil.Add(artistPath); err != nil {
-			return err
-		}
-		if err = gitutil.Commit(artistPath, fmt.Sprintf("feat: add canvas %s as submodule", canvasName)); err != nil {
-			return err
-		}
-
-		// 4. Link artist to atelier
-		fmt.Println("Connecting artist to atelier...")
-		if err = gitutil.AddSubmodule(atelierPath, artistDirName); err != nil {
-			return err
-		}
-		if err = gitutil.Add(atelierPath); err != nil {
-			return err
-		}
-		if err = gitutil.Commit(atelierPath, fmt.Sprintf("feat: add artist %s as submodule", artistName)); err != nil {
-			return err
+		if err = engine.CreateArtist(atelierPath, artistName, canvasName); err != nil {
+			return err // Error is already formatted and cleanup is handled by the engine
 		}
 
 		fmt.Printf("Artist '%s' initialized successfully in atelier '%s'!\n", artistName, filepath.Base(atelierPath))
 		return nil
 	},
-}
-
-func createArtistBoilerplate(basePath, projectType string) error {
-	// README
-	readmePath := fmt.Sprintf("templates/%s/README.md", projectType)
-	readmeContent, err := artistTemplatesFS.ReadFile(readmePath)
-	if err != nil {
-		return fmt.Errorf("failed to read embedded template %s: %w", readmePath, err)
-	}
-	if err := fs.WriteFile(filepath.Join(basePath, "README.md"), readmeContent); err != nil {
-		return err
-	}
-
-	// GEMINI.md
-	geminiPath := fmt.Sprintf("templates/%s/GEMINI.md", projectType)
-	geminiContent, err := artistTemplatesFS.ReadFile(geminiPath)
-	if err != nil {
-		return fmt.Errorf("failed to read embedded template %s: %w", geminiPath, err)
-	}
-	if err := fs.WriteFile(filepath.Join(basePath, "GEMINI.md"), geminiContent); err != nil {
-		return err
-	}
-
-	// .gitignore
-	gitignorePath := fmt.Sprintf("templates/%s/gitignore", projectType)
-	gitignoreContent, err := artistTemplatesFS.ReadFile(gitignorePath)
-	if err != nil {
-		return fmt.Errorf("failed to read embedded template %s: %w", gitignorePath, err)
-	}
-	if err := fs.WriteFile(filepath.Join(basePath, ".gitignore"), gitignoreContent); err != nil {
-		return err
-	}
-
-	// .geminiignore
-	geminiignorePath := fmt.Sprintf("templates/%s/geminiignore", projectType)
-	geminiignoreContent, err := artistTemplatesFS.ReadFile(geminiignorePath)
-	if err != nil {
-		return fmt.Errorf("failed to read embedded template %s: %w", geminiignorePath, err)
-	}
-	if err := fs.WriteFile(filepath.Join(basePath, ".geminiignore"), geminiignoreContent); err != nil {
-		return err
-	}
-
-	// Makefile
-	makefilePath := fmt.Sprintf("templates/%s/Makefile", projectType)
-	makefileContent, err := artistTemplatesFS.ReadFile(makefilePath)
-	if err != nil {
-		return fmt.Errorf("failed to read embedded template %s: %w", makefilePath, err)
-	}
-	if err := fs.WriteFile(filepath.Join(basePath, "Makefile"), makefileContent); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func listAvailableAteliers() {
