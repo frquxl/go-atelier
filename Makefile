@@ -4,8 +4,12 @@
 BINARY_NAME=atelier-cli
 
 # Build the binary
-build:
-	go build -ldflags "-X 'atelier-cli/cmd.version=$$(git describe --tags --abbrev=0 2>/dev/null || echo dev)'" -o $(BINARY_NAME) .
+build: generate
+	go build -o $(BINARY_NAME) .
+
+# Generate version file
+generate:
+	go generate ./cmd
 
 # Clean build artifacts
 clean:

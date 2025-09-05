@@ -14,9 +14,12 @@ if ! command -v go &> /dev/null; then
     exit 1
 fi
 
-# Build and install
-echo "📦 Building and installing atelier-cli..."
-go install -ldflags "-X 'atelier-cli/cmd.version=$(git describe --tags --abbrev=0 2>/dev/null || echo dev)'" .
+# Generate version file and install
+echo "📦 Generating version file..."
+go generate ./cmd
+
+echo "📦 Installing atelier-cli..."
+go install .
 
 # Check if installation was successful
 if command -v atelier-cli &> /dev/null; then

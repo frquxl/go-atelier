@@ -4,10 +4,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	version = "dev"
-)
-
 var RootCmd = &cobra.Command{
 	Use:   "atelier",
 	Short: "A metaphor-driven CLI for software project management",
@@ -15,5 +11,5 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.Version = version
+	RootCmd.Version = Version
 }
