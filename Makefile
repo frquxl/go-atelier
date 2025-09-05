@@ -37,6 +37,10 @@ deps:
 	go mod download
 	go mod tidy
 
+# Install globally
+install: generate
+	go install .
+
 # Build and test
 all: fmt vet test build
 
@@ -70,6 +74,7 @@ help:
 	@echo "  vet         - Run Go vet on CLI code"
 	@echo "  run         - Build and run the CLI binary"
 	@echo "  deps        - Download and tidy CLI dependencies"
+	@echo "  install     - Generate version and install CLI globally"
 	@echo "  all         - Format, vet, test, and build CLI"
 	@echo "  web-dev     - Start web app development server"
 	@echo "  web-build   - Build web app for production"
