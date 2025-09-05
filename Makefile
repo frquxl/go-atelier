@@ -9,6 +9,9 @@ VERSION := $(shell git describe --tags --abbrev=0)
 # Go linker flags to inject version
 LDFLAGS = -ldflags="-X 'github.com/frquxl/go-atelier/cmd.Version=$(VERSION)'"
 
+# Determine GOBIN, defaulting to go env GOBIN
+GOBIN ?= $(shell go env GOBIN)
+
 # Build the binary
 build:
 	go build $(LDFLAGS) -o $(BINARY_NAME) .
@@ -41,7 +44,8 @@ deps:
 
 # Install globally
 install:
-	go install $(LDFLAGS) .
+	@echo "Building $(BINARY_NAME) with version $(VERSION) and installing to $(GOBIN)"
+	go build $(LDFLAGS) -o $(GOBIN)/$(BINARY_NAME) .
 
 # Build and test
 all: fmt vet test build
