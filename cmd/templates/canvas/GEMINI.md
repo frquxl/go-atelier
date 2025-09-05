@@ -43,6 +43,11 @@ canvas/
 - **Testing Strategy**: How is code quality ensured?
 - **Documentation**: How is the codebase documented?
 
+### Python Projects
+- **Virtual Environment**: All Python projects must use `.venv` for virtual environments
+- **Dependencies**: Use `requirements.txt` or `pyproject.toml` for dependency management
+- **Environment Activation**: Always activate the virtual environment before development
+
 ### Git Workflow
 - **Branching**: Feature branches, release branches, etc.
 - **Commits**: Atomic, descriptive commit messages
