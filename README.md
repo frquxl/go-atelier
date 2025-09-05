@@ -26,7 +26,7 @@ This will install the `atelier-cli` binary to your `$GOPATH/bin` or `$HOME/go/bi
 
 ```bash
 # Build locally
-go build -o ateliercli .
+go build -o atelier-cli .
 
 # Use directly
 ./ateliercli --help
