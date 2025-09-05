@@ -66,7 +66,7 @@ If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 		if err = gitutil.Init(atelierPath); err != nil {
 			return err
 		}
-		if err = fs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(atelierBaseName)); err != nil {
+		if err = fs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(atelierDirName)); err != nil {
 			return err
 		}
 		if err = createBoilerplate(atelierPath, "atelier"); err != nil {
@@ -82,7 +82,7 @@ If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 			return err
 		}
 		// Write artist context with atelier information
-		artistContext := fmt.Sprintf("%s\n%s", atelierBaseName, artistName)
+		artistContext := fmt.Sprintf("%s\n%s", atelierDirName, artistDirName)
 		if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
 			return err
 		}
@@ -105,7 +105,7 @@ If no artist/canvas provided, defaults to 'van-gogh' and 'sunflowers'.`,
 			return err
 		}
 		// Write canvas context with atelier and artist information
-		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierBaseName, artistName, canvasName)
+		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierDirName, artistDirName, canvasDirName)
 		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 			return err
 		}

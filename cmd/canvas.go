@@ -70,7 +70,7 @@ var canvasInitCmd = &cobra.Command{
 			return err
 		}
 		// Write canvas context with atelier and artist information
-		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistName, canvasName)
+		canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistName, canvasDirName)
 		if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 			return err
 		}
