@@ -5,7 +5,7 @@ BINARY_NAME=atelier-cli
 
 # Build the binary
 build:
-	go build -o $(BINARY_NAME) .
+	go build -ldflags "-X 'atelier-cli/cmd.version=$$(git describe --tags --abbrev=0 2>/dev/null || echo dev)'" -o $(BINARY_NAME) .
 
 # Clean build artifacts
 clean:

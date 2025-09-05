@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"os/exec"
-	"strings"
-
 	"github.com/spf13/cobra"
+)
+
+var (
+	version = "dev"
 )
 
 var RootCmd = &cobra.Command{
@@ -14,14 +15,5 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.Version = getVersion()
-}
-
-func getVersion() string {
-	cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
-	output, err := cmd.Output()
-	if err != nil {
-		return "dev"
-	}
-	return strings.TrimSpace(string(output))
+	RootCmd.Version = version
 }
