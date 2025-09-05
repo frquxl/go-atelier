@@ -16,7 +16,7 @@ clean:
 	go clean
 	rm -f $(BINARY_NAME)
 
-# Run tests
+# Run unit tests (does not include E2E tests)
 test:
 	go test ./...
 
@@ -45,8 +45,12 @@ install: generate
 all: fmt vet test build
 
 # E2E Testing
-e2e-test:
-	@echo "Running end-to-end tests..."
+e2e-test: ## Run the new Go-based E2E tests
+	@echo "Running Go-based end-to-end tests..."
+	go test -v -tags=e2e ./test/e2e/...
+
+e2e-test-sh: ## Run the original shell-based E2E tests
+	@echo "Running legacy shell-based end-to-end tests..."
 	./test-e2e.sh
 
 # Web App Development
@@ -67,16 +71,18 @@ web-start:
 # Show help
 help:
 	@echo "Available targets:"
-	@echo "  build       - Build the CLI binary"
-	@echo "  clean       - Clean CLI build artifacts"
-	@echo "  test        - Run CLI tests"
-	@echo "  fmt         - Format CLI code"
-	@echo "  vet         - Run Go vet on CLI code"
-	@echo "  run         - Build and run the CLI binary"
-	@echo "  deps        - Download and tidy CLI dependencies"
-	@echo "  install     - Generate version and install CLI globally"
-	@echo "  all         - Format, vet, test, and build CLI"
-	@echo "  web-dev     - Start web app development server"
-	@echo "  web-build   - Build web app for production"
-	@echo "  web-start   - Start web app in production mode"
-	@echo "  help        - Show this help"
+	@echo "  build         - Build the CLI binary"
+	@echo "  clean         - Clean CLI build artifacts"
+	@echo "  test          - Run unit tests"
+	@echo "  e2e-test      - Run Go-based end-to-end tests"
+	@echo "  e2e-test-sh   - Run the legacy shell-based E2E tests"
+	@echo "  fmt           - Format CLI code"
+	@echo "  vet           - Run Go vet on CLI code"
+	@echo "  run           - Build and run the CLI binary"
+	@echo "  deps          - Download and tidy CLI dependencies"
+	@echo "  install       - Generate version and install CLI globally"
+	@echo "  all           - Format, vet, test, and build CLI"
+	@echo "  web-dev       - Start web app development server"
+	@echo "  web-build     - Build web app for production"
+	@echo "  web-start     - Start web app in production mode"
+	@echo "  help          - Show this help"
