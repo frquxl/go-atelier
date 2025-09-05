@@ -4,12 +4,8 @@
 BINARY_NAME=atelier-cli
 
 # Build the binary
-build: generate
+build:
 	go build -o $(BINARY_NAME) .
-
-# Generate version file
-generate:
-	go generate ./cmd
 
 # Clean build artifacts
 clean:
@@ -38,7 +34,7 @@ deps:
 	go mod tidy
 
 # Install globally
-install: generate
+install:
 	go install .
 
 # Build and test
@@ -80,7 +76,7 @@ help:
 	@echo "  vet           - Run Go vet on CLI code"
 	@echo "  run           - Build and run the CLI binary"
 	@echo "  deps          - Download and tidy CLI dependencies"
-	@echo "  install       - Generate version and install CLI globally"
+	@echo "  install       - Install the CLI globally"
 	@echo "  all           - Format, vet, test, and build CLI"
 	@echo "  web-dev       - Start web app development server"
 	@echo "  web-build     - Build web app for production"
