@@ -3,9 +3,15 @@
 # Binary name
 BINARY_NAME=atelier-cli
 
+# Versioning - get the latest git tag
+VERSION := $(shell git describe --tags --abbrev=0)
+
+# Go linker flags to inject version
+LDFLAGS = -ldflags="-X 'github.com/frquxl/go-atelier/cmd.Version=$(VERSION)'"
+
 # Build the binary
 build:
-	go build -o $(BINARY_NAME) .
+	go build $(LDFLAGS) -o $(BINARY_NAME) .
 
 # Clean build artifacts
 clean:
@@ -35,7 +41,7 @@ deps:
 
 # Install globally
 install:
-	go install .
+	go install $(LDFLAGS) .
 
 # Build and test
 all: fmt vet test build
