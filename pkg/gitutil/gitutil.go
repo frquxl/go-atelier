@@ -41,3 +41,14 @@ func AddSubmodule(parentDir, submodulePath string) error {
 	// Submodule paths are relative to the parent directory
 	return RunGitCommand(parentDir, "submodule", "add", "./"+submodulePath, submodulePath)
 }
+
+// SubmoduleDeinit deinitializes a submodule.
+func SubmoduleDeinit(parentDir, submodulePath string) error {
+	return RunGitCommand(parentDir, "submodule", "deinit", submodulePath)
+}
+
+// Remove removes a submodule from the Git index and .gitmodules.
+// It performs a `git rm` which removes from index, .gitmodules, and work tree.
+func Remove(parentDir, submodulePath string) error {
+	return RunGitCommand(parentDir, "rm", submodulePath)
+}

@@ -30,9 +30,11 @@ func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err er
 	if err = gitutil.Init(atelierPath); err != nil {
 		return "", err
 	}
+	// Write marker file
 	if err = fs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(atelierDirName)); err != nil {
 		return "", err
 	}
+	// Create boilerplate files
 	if err = templates.CreateBoilerplate(atelierPath, "atelier"); err != nil {
 		return "", err
 	}
@@ -60,7 +62,6 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 		}
 	}()
 
-	// 1. Create and initialize Artist (as a standalone repo first)
 	fmt.Println("Initializing artist...")
 	if err = fs.CreateDir(artistPath); err != nil {
 		return err
@@ -68,6 +69,7 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	if err = gitutil.Init(artistPath); err != nil {
 		return err
 	}
+	// Write marker file
 	artistContext := fmt.Sprintf("%s\n%s", atelierDirName, artistDirName)
 	if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
 		return err
@@ -81,9 +83,11 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 		templateType = "artist-gallery"
 	}
 
+	// Create boilerplate files
 	if err = templates.CreateBoilerplate(artistPath, templateType); err != nil {
 		return err
 	}
+	// Stage changes (marker + boilerplate)
 	if err = gitutil.Add(artistPath); err != nil {
 		return err
 	}
@@ -101,6 +105,7 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	if err = gitutil.AddSubmodule(atelierPath, artistDirName); err != nil {
 		return err
 	}
+	// Stage .gitmodules and submodule path
 	if err = gitutil.Add(atelierPath); err != nil {
 		return err
 	}
@@ -134,7 +139,6 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 		}
 	}()
 
-	// 1. Create and initialize Canvas (as a standalone repo first)
 	fmt.Println("Initializing canvas...")
 	if err = fs.CreateDir(canvasPath); err != nil {
 		return err
@@ -142,13 +146,16 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	if err = gitutil.Init(canvasPath); err != nil {
 		return err
 	}
+	// Write marker file
 	canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistDirName, canvasDirName)
 	if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 		return err
 	}
+	// Create boilerplate files
 	if err = templates.CreateBoilerplate(canvasPath, "canvas"); err != nil {
 		return err
 	}
+	// Stage changes (marker + boilerplate)
 	if err = gitutil.Add(canvasPath); err != nil {
 		return err
 	}
@@ -161,6 +168,7 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	if err = gitutil.AddSubmodule(artistPath, canvasDirName); err != nil {
 		return err
 	}
+	// Stage .gitmodules and the submodule path
 	if err = gitutil.Add(artistPath); err != nil {
 		return err
 	}
@@ -168,5 +176,69 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 		return err
 	}
 
+	return nil
+}
+
+// DeleteArtist deletes an artist studio and removes it from Git tracking.
+func DeleteArtist(atelierPath, artistFullName string) (err error) {
+	artistPath := filepath.Join(atelierPath, artistFullName)
+
+	defer func() {
+		if err != nil {
+			fmt.Printf("Artist deletion failed, directory %s might need manual cleanup.\n", artistPath)
+		}
+	}()
+
+	fmt.Printf("Deleting artist %s...\n", artistFullName)
+
+	// 1. Deinitialize the submodule
+	if err = gitutil.SubmoduleDeinit(atelierPath, artistFullName); err != nil {
+		return fmt.Errorf("failed to deinitialize artist submodule: %w", err)
+	}
+
+	// 2. Remove the submodule entry from .gitmodules and index
+	if err = gitutil.Remove(atelierPath, artistFullName); err != nil {
+		return fmt.Errorf("failed to remove artist from git tracking: %w", err)
+	}
+
+	// 3. Remove the actual directory
+	if err = os.RemoveAll(artistPath); err != nil {
+		return fmt.Errorf("failed to remove artist directory: %w", err)
+	}
+
+	// No automatic commit here. User is responsible for committing the changes.
+	fmt.Printf("Artist '%s' deleted. Remember to 'git add %s' and 'git commit' in the parent repository.\n", artistFullName, artistFullName)
+	return nil
+}
+
+// DeleteCanvas deletes a canvas and removes it from Git tracking.
+func DeleteCanvas(artistPath, canvasFullName string) (err error) {
+	canvasPath := filepath.Join(artistPath, canvasFullName)
+
+	defer func() {
+		if err != nil {
+			fmt.Printf("Canvas deletion failed, directory %s might need manual cleanup.\n", canvasPath)
+		}
+	}()
+
+	fmt.Printf("Deleting canvas %s...\n", canvasFullName)
+
+	// 1. Deinitialize the submodule
+	if err = gitutil.SubmoduleDeinit(artistPath, canvasFullName); err != nil {
+		return fmt.Errorf("failed to deinitialize canvas submodule: %w", err)
+	}
+
+	// 2. Remove the submodule entry from .gitmodules and index
+	if err = gitutil.Remove(artistPath, canvasFullName); err != nil {
+		return fmt.Errorf("failed to remove canvas from git tracking: %w", err)
+	}
+
+	// 3. Remove the actual directory
+	if err = os.RemoveAll(canvasPath); err != nil {
+		return fmt.Errorf("failed to remove canvas directory: %w", err)
+	}
+
+	// No automatic commit here. User is responsible for committing the changes.
+	fmt.Printf("Canvas '%s' deleted. Remember to 'git add %s' and 'git commit' in the parent repository.\n", canvasFullName, canvasFullName)
 	return nil
 }

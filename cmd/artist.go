@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/frquxl/go-atelier/pkg/engine"
+	"github.com/frquxl/go-atelier/pkg/util"
 	"github.com/spf13/cobra"
 )
 
@@ -46,6 +47,42 @@ var artistInitCmd = &cobra.Command{
 	},
 }
 
+var artistDeleteCmd = &cobra.Command{
+	Use:   "delete <artist-full-name>",
+	Short: "Delete an artist studio",
+	Long:  `Deletes an artist studio and removes it from Git tracking. Requires the full directory name (e.g., artist-van-gogh).`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		// Check if we're in an atelier directory
+		if _, err := os.Stat(".atelier"); os.IsNotExist(err) {
+			listAvailableAteliers()
+			return fmt.Errorf("not in an atelier directory. See available ateliers above")
+		}
+
+		artistFullName := args[0]
+
+		// Confirmation prompt
+		confirmMessage := fmt.Sprintf("Are you sure you want to delete artist '%s'? This will delete the artist's directory and all its contents, and remove it from Git tracking.", artistFullName)
+		if !util.Confirm(confirmMessage) {
+			fmt.Println("Artist deletion cancelled.")
+			return nil
+		}
+
+		// Get current working directory (atelier path)
+		atelierPath, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("could not get current working directory: %w", err)
+		}
+
+		if err = engine.DeleteArtist(atelierPath, artistFullName); err != nil {
+			return err
+		}
+
+		// The engine.DeleteArtist function now prints the guidance message.
+		return nil
+	},
+}
+
 func listAvailableAteliers() {
 	fmt.Println("Available ateliers in current directory:")
 
@@ -75,4 +112,5 @@ func listAvailableAteliers() {
 func init() {
 	RootCmd.AddCommand(artistCmd)
 	artistCmd.AddCommand(artistInitCmd)
+	artistCmd.AddCommand(artistDeleteCmd)
 }

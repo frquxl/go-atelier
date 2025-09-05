@@ -10,6 +10,9 @@
 
 6. cli command to move canvases between artists, e.g there could be a cloud functions artist that handles production, and we might want to move from a dev artist to production 
 
-7. we could have a few predefiend artisits like "sketch" for sandbox, "gallery" for production, maybe "go" for golang expert etc 
+8. Maybe a way for allowing user to inherit default context changes? So as we refine the handling of AI agents, thne when we have an update cli, user can --pull-context, and a clever system tries to update their GEMINI.md files with the new ways to handle the AI's
+
+
+
 
 

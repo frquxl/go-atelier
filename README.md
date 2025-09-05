@@ -57,6 +57,16 @@ cd atelier-my-project
 atelier-cli artist init picasso
 ```
 
+### Delete an Artist
+
+```bash
+# Navigate to your atelier directory
+cd atelier-my-project
+
+# Delete an artist (requires full name, e.g., artist-picasso)
+atelier-cli artist delete artist-picasso
+```
+
 ### Add a New Canvas
 
 ```bash
@@ -65,6 +75,16 @@ cd artist-picasso
 
 # Add a new canvas
 atelier-cli canvas init guernica
+```
+
+### Delete a Canvas
+
+```bash
+# Navigate to an artist directory
+cd artist-picasso
+
+# Delete a canvas (requires full name, e.g., canvas-guernica)
+atelier-cli canvas delete canvas-guernica
 ```
 
 ## Development & Testing

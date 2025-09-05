@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/frquxl/go-atelier/pkg/engine"
+	"github.com/frquxl/go-atelier/pkg/util"
 	"github.com/spf13/cobra"
 )
 
@@ -45,6 +46,42 @@ var canvasInitCmd = &cobra.Command{
 	},
 }
 
+var canvasDeleteCmd = &cobra.Command{
+	Use:   "delete <canvas-full-name>",
+	Short: "Delete a canvas",
+	Long:  `Deletes a canvas and removes it from Git tracking. Requires the full directory name (e.g., canvas-sunflowers).`,
+	Args:  cobra.ExactArgs(1),
+	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		// Check if we're in an artist directory
+		if _, err := os.Stat(".artist"); os.IsNotExist(err) {
+			listAvailableArtists()
+			return fmt.Errorf("not in an artist directory. See available artists above")
+		}
+
+		canvasFullName := args[0]
+
+		// Confirmation prompt
+		confirmMessage := fmt.Sprintf("Are you sure you want to delete canvas '%s'? This will delete the canvas's directory and all its contents, and remove it from Git tracking.", canvasFullName)
+		if !util.Confirm(confirmMessage) {
+			fmt.Println("Canvas deletion cancelled.")
+			return nil
+		}
+
+		// Get current working directory (artist path)
+		artistPath, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("could not get current working directory: %w", err)
+		}
+
+		if err = engine.DeleteCanvas(artistPath, canvasFullName); err != nil {
+			return err
+		}
+
+		// The engine.DeleteCanvas function now prints the guidance message.
+		return nil
+	},
+}
+
 func listAvailableArtists() {
 	fmt.Println("Available artists in current atelier:")
 
@@ -74,4 +111,5 @@ func listAvailableArtists() {
 func init() {
 	RootCmd.AddCommand(canvasCmd)
 	canvasCmd.AddCommand(canvasInitCmd)
+	canvasCmd.AddCommand(canvasDeleteCmd)
 }

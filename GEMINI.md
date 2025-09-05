@@ -38,6 +38,15 @@
   - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files.
   - Commits submodule relationships to both atelier and artist repositories.
 
+### artist delete
+- **Purpose**: Deletes an artist studio and removes it from Git tracking.
+- **Usage**: `atelier-cli artist delete <artist-full-name>`
+- **Functionality**:
+  - Must be run from within an atelier directory.
+  - Prompts for confirmation before deletion.
+  - Deinitializes the artist submodule, removes it from Git, and deletes the directory.
+  - Commits changes to the parent atelier repository.
+
 ### canvas init
 - **Purpose**: Creates a new canvas as a Git submodule within an existing artist studio.
 - **Usage**: `atelier-cli canvas init <canvas-name>`
@@ -49,6 +58,15 @@
   - Creates marker file `.canvas` in the canvas directory.
   - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files.
   - Commits submodule relationship to artist repository.
+
+### canvas delete
+- **Purpose**: Deletes a canvas and removes it from Git tracking.
+- **Usage**: `atelier-cli canvas delete <canvas-full-name>`
+- **Functionality**:
+  - Must be run from within an artist directory.
+  - Prompts for confirmation before deletion.
+  - Deinitializes the canvas submodule, removes it from Git, and deletes the directory.
+  - Commits changes to the parent artist repository.
   
 ## Project Structure
 - **`main.go`**: CLI entry point.
