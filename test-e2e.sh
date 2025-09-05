@@ -162,6 +162,7 @@ assert_file_exists "$EXPECTED_CANVAS/README.md"
 assert_file_exists "$EXPECTED_CANVAS/GEMINI.md"
 assert_file_exists "$EXPECTED_CANVAS/.gitignore"
 assert_file_exists "$EXPECTED_CANVAS/.geminiignore"
+assert_file_exists "$EXPECTED_CANVAS/Makefile"
 assert_git_repo "$EXPECTED_CANVAS"
 
 # Check canvas content
