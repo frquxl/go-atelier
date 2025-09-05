@@ -6,21 +6,30 @@ A metaphor-driven CLI tool for software project management using the atelier/art
 
 ### For Development/Testing (Recommended)
 
-Install globally using Go's built-in installation:
+Install globally using the provided installation script:
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd go-atelier
 
-# Install globally
-go install .
+# Install globally (includes version embedding)
+./install.sh
 
 # Verify installation
 atelier-cli --version
 ```
 
 This will install the `atelier-cli` binary to your `$GOPATH/bin` or `$HOME/go/bin` directory, which should be in your PATH.
+
+### Alternative: Manual Installation
+
+If you prefer manual installation:
+
+```bash
+# Install globally with version embedding
+go install -ldflags "-X 'atelier-cli/cmd.version=$(git describe --tags --abbrev=0 2>/dev/null || echo dev)'" .
+```
 
 ### Alternative: Local Build
 
