@@ -44,8 +44,9 @@ deps:
 
 # Install globally
 install:
-	@echo "Building $(BINARY_NAME) with version $(VERSION) and installing to $(GOBIN)"
-	go build $(LDFLAGS) -o $(GOBIN)/$(BINARY_NAME) .
+	@echo "Building $(BINARY_NAME) with version $(VERSION) and installing globally"
+	go build $(LDFLAGS) -o $(BINARY_NAME) .
+	cp $(BINARY_NAME) $(shell go env GOBIN)/
 
 # Build and test
 all: fmt vet test build
