@@ -1,10 +1,11 @@
 package templates
 
 import (
-	"atelier-cli/pkg/fs"
 	"embed"
 	"fmt"
 	"path/filepath"
+
+	"github.com/frquxl/go-atelier/pkg/fs"
 )
 
 //go:embed assets/*

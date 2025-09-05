@@ -1,12 +1,12 @@
 package cmd
 
 import (
-	"atelier-cli/pkg/engine"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/frquxl/go-atelier/pkg/engine"
 	"github.com/spf13/cobra"
 )
 

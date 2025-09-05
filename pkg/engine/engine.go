@@ -1,13 +1,14 @@
 package engine
 
 import (
-	"atelier-cli/pkg/fs"
-	"atelier-cli/pkg/gitutil"
-	"atelier-cli/pkg/templates"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/frquxl/go-atelier/pkg/fs"
+	"github.com/frquxl/go-atelier/pkg/gitutil"
+	"github.com/frquxl/go-atelier/pkg/templates"
 )
 
 // CreateAtelier initializes the main atelier directory and repository.
