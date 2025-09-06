@@ -14,7 +14,7 @@ Your atelier uses a hierarchical structure:
 ## 🚀 Getting Started
 
 1. **Explore artists**: `ls artist-*` to see available artist workspaces
-2. **Work on projects**: `cd artist-name/canvas-name` to enter a project
+2. **Work on projects**: `cd artist-name/canvas-name` to enter a canas (project)
 3. **Set up remote repositories**: Work with your AI pair programmer to push the entire atelier (including all submodules) to private GitHub repositories using SSH. Example prompt: "this is a new project pre configured with submodules, can you get it all remoted private using gh cli, please use the ssh version"
 4. **Develop independently**: Each canvas is its own Git repository
 
@@ -51,24 +51,42 @@ atelier/
 - **Version control**: Each level has its own Git history
 - **Independence**: Projects don't interfere with each other
 
+## 📚 Documentation
+
+- **README.md** (this file): Human-readable workspace guide
+- **GEMINI.md**: AI pair programming context and patterns
+
 ### Git Workflow
 
 - Day-to-day: use regular Git in each repo (canvas, artist, or atelier) as you normally would:
   - Example: cd artist-van-gogh/canvas-sunflowers && git add -A && git commit -m "feat: changes" && git push
 - Major recursive commit (end-of-day, multiple canvases/artists touched):
   - From the atelier root, run: make push
-  - This invokes the engine [bash.push-engine.sh()](util/git/push-engine.sh:1) to:
+  - This invokes the CLI atelier-cli push to:
     - Recurse through all artists and their canvases
     - Commit and push canvases first (if changes)
     - Commit and push artists with updated canvas pointers (single combined commit per artist)
     - Commit and push the atelier with updated artist pointers (single combined commit)
 - Notes:
   - AUTO_COMMIT_DEFAULT=true will auto-stage and auto-commit working tree changes and pointer updates.
-  - The engine is non-interactive by default and designed for major roll-ups; prefer manual Git for normal incremental commits.
+  - The CLI is non-interactive by default and designed for major roll-ups; prefer manual Git for normal incremental commits.
 
-## 📚 Documentation
+  ### Atelier Commands at this level
+- Push the entire workspace recursively (canvases → artists → atelier):
+  - CLI: `atelier-cli push [--dry-run] [--quiet] [--force]`
+  - Make: `make push`
+- Manage artists from the atelier root:
+  - Init a new artist: `atelier-cli artist init &lt;artist-name&gt;`
+  - Delete an artist (requires full directory name, e.g., artist-van-gogh): `atelier-cli artist delete &lt;artist-full-name&gt;`
+  - Make equivalents:
+    - `make artist-init NAME=van-gogh`
+    - `make artist-delete FULL=artist-van-gogh`
 
-- **README.md** (this file): Human-readable workspace guide
-- **GEMINI.md**: AI pair programming context and patterns
+Notes:
+- The push command is recursive when run from the atelier and will:
+  1) Commit/push canvases that changed,
+  2) Commit/push artists with updated canvas pointers,
+  3) Commit/push the atelier with updated artist pointers.
+- Commands are scope-aware: they must be run at the correct level (atelier, artist, canvas) per the CLI’s cobra validation.
 
 Happy creating! 🎨✨

@@ -26,10 +26,10 @@ list-canvases: ## List all canvas submodules in this artist
 
 # Git push operations
 push: ## Major recursive commit: push this artist and all canvases
-	@../util/git/push-engine.sh
+	@atelier-cli artist push
 
 push-canvases: ## Alias: same as 'make push' (engine recurses by default)
-	@../util/git/push-engine.sh
+	@atelier-cli artist push
 
 # Maintenance
 clean: ## Clean build artifacts and temporary files
@@ -66,3 +66,9 @@ clean: ## Clean build artifacts and temporary files
 #			(cd "$$dir" && make test 2>/dev/null || echo "No test target in $$dir"); \
 #		fi \
 #	done
+# Artist-level canvas management
+canvas-init: ## Initialize a new canvas in this artist (NAME=&lt;name&gt;)
+	@atelier-cli canvas init $(NAME)
+
+canvas-delete: ## Delete a canvas in this artist (FULL=&lt;canvas-full-name&gt;)
+	@atelier-cli canvas delete $(FULL)

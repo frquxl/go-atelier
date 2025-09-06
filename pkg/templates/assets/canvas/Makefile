@@ -86,7 +86,7 @@ docs: ## Generate documentation
 
 # Git operations
 push: ## Major commit: push this canvas (no recursion below)
-	@../../util/git/push-engine.sh
+	@atelier-cli canvas push
 
 # Maintenance
 clean: ## Clean build artifacts and temporary files

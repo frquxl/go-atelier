@@ -26,7 +26,7 @@ status: ## Show status of all submodules
 
 # Git push operations
 push: ## Major recursive commit: push atelier, all artists, and all canvases
-	@./util/git/push-engine.sh
+	@atelier-cli push
 
 # Development workflow
 build: ## Build all projects in the atelier
@@ -67,3 +67,9 @@ clean: ## Clean build artifacts and temporary files
 # dev: ## Development environment setup
 # staging: ## Staging environment setup
 # prod: ## Production environment setup
+# Atelier-level artist management
+artist-init: ## Initialize a new artist (NAME=&lt;name&gt;)
+	@atelier-cli artist init $(NAME)
+
+artist-delete: ## Delete an artist (FULL=&lt;artist-full-name&gt;)
+	@atelier-cli artist delete $(FULL)

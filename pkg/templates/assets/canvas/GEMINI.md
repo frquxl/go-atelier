@@ -44,18 +44,13 @@ canvas/
 - **Testing Strategy**: How is code quality ensured?
 - **Documentation**: How is the codebase documented?
 
-### Python Projects
-- **Virtual Environment**: All Python projects must use `.venv` for virtual environments
-- **Dependencies**: Use `requirements.txt` or `pyproject.toml` for dependency management
-- **Environment Activation**: Always activate the virtual environment before development
-
 ### Git Workflow
 - **Branching**: Feature branches, release branches, etc.
 - **Commits**: Atomic, descriptive commit messages
 - **Pull Requests**: Code review and collaboration process
 - **Releases**: Versioning and release management
 
-## 🔧 Development Best Practices
+# 🔧 Development Best Practices
 
 ### Code Quality
 - Write clean, readable, maintainable code
@@ -75,14 +70,6 @@ canvas/
 - Plan releases and milestones
 - Maintain project documentation
 
-## 🎯 Project Goals & Success Criteria
-
-*What are the measurable outcomes for this project?*
-
-*How will success be evaluated?*
-
-*What are the key milestones and deliverables?*
-
 ## 🚀 Development Workflow
 
 1. **Understand the codebase**: Review existing code and documentation
@@ -96,6 +83,36 @@ canvas/
 - **README.md**: Human-readable project guide
 - **GEMINI.md**: AI pair programming context (this file)
 - **Code comments**: Inline documentation
-- **API docs**: Interface and usage documentation
 
-This canvas provides a focused, independent environment for developing high-quality software within the atelier ecosystem.
+#### Atelier Commands at this level
+- Use `make push` or `atelier-cli canvas push` from this canvas directory to push only this canvas.
+- Non-recursive: only this canvas is auto-staged, committed (when configured), and pushed.
+- For recursive roll-ups:
+  - From the artist directory use `make push` or `atelier-cli artist push` to recurse through all canvases and then the artist pointer.
+  - From the atelier root use `make push` or `atelier-cli push` to recurse canvases → artists → atelier.
+- Useful flags: `--dry-run`, `--quiet`, `--force`.
+
+Example:
+```bash
+# Preview canvas-only push (no changes pushed)
+atelier-cli canvas push --dry-run
+
+# Execute canvas-only push
+make push
+# equivalent to:
+atelier-cli canvas push
+```
+##### Init/Delete scope
+- Canvas initialization and deletion are managed from the artist level (not from inside a canvas):
+  - Init: `atelier-cli canvas init &lt;canvas-name&gt;` (run from the artist directory)
+  - Delete: `atelier-cli canvas delete &lt;canvas-full-name&gt;` (run from the artist directory, e.g., canvas-example)
+
+# Canvas specific context from here
+
+## 🎯 Canvas Vision and Goals 
+
+## Canvas Requirements
+
+## Canvas MVP
+
+- and add more below as you paint this new amaxing canvas!

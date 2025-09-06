@@ -33,26 +33,6 @@ atelier/
 - **Atelier Level**: High-level project organization and documentation
 - **Artist Level**: Thematic grouping of related projects
 - **Canvas Level**: Individual, independent software projects
-
-### Development Patterns
-- Each canvas is a complete, independent Git repository
-- Artists provide organizational grouping (e.g., by technology, client, or theme)
-- Atelier maintains overall project structure and relationships
-
-### Git Workflow
-- **Canvas commits**: Independent development in each canvas
-- **Artist updates**: Track canvas versions within artists
-- **Atelier updates**: Track artist versions in main repository
-
-**AI Pair Programming Context:**
-- Always use SSH URLs in .gitmodules (e.g., `git@github.com:user/repo.git`) - avoid relative paths like `./repo`
-- When creating new submodules: Use `gh repo create` to create GitHub repo first, then push content
-- Update parent repos after submodule changes: `git add submodule && git commit -m "Update submodule"`
-- Force push rewritten history when fixing .gitmodules: `git push --force` (use carefully)
-- Check submodule status: `git submodule status` to see current commit hashes
-- Initialize new submodules: `git submodule update --init --recursive`
-
-### Context Awareness
 - Always identify which level (atelier/artist/canvas) you're working in
 - Respect the independence of each canvas's Git repository
 - Understand submodule relationships for proper version control
@@ -62,15 +42,47 @@ atelier/
 - Reference the hierarchical structure when explaining concepts
 - Consider the independence of each canvas when suggesting changes
 
-## 🎯 Working Effectively
-- **Navigation**: Always know which level you're operating at
-- **Changes**: Consider impact across the 3-level hierarchy
-- **Collaboration**: Respect each canvas's independent nature
-- **Documentation**: Maintain context at each level
+### Development Patterns
+- Each canvas is a complete, independent Git repository
+- Artists provide organizational grouping (e.g., by technology, client, or theme)
+- Atelier maintains overall project structure and relationships
 
-## 📚 Available Documentation
-- README.md files: Human-readable guides at each level
-- GEMINI.md files: AI context for each workspace level
-- .gitmodules files: Track submodule relationships
+### 📚 Available Documentation
+- **README.md files**: Human-readable guides at each level
+- **GEMINI.md files**: AI context for each workspace level
+- **.gitmodules files**: Track submodule relationships for artists
+
+### Git Workflows and info
+- **Atelier repo updates**: Track artist versions in main repository
+- **Artist repo updates**: Track canvas versions within artists
+- **Canvas repo commits**: Independent development in each canvas
+- **Check submodule status**: `git submodule status` to see current commit hashes
+- **Atelier level repo**: yes Atlelier is repo too, mainly docs
+- **'atelier-cli push' is available**: `make push` or `atelier-cli push` works at this level to perform a recursive roll-up push from the atelier root.
+- Recursive order: canvases are committed and pushed first, then artists (with updated submodule pointers), then the atelier (with updated artist pointers).
+- Useful flags: `--dry-run`, `--quiet`, `--force`.
+
+Example:
+```bash
+# Safe preview of the recursive push (no changes pushed)
+atelier-cli push --dry-run
+
+# Execute the recursive push from the atelier root
+make push
+# equivalent to:
+atelier-cli push
+```
+#### Atelier Artist Commands at this level
+- Initialize a new artist from the atelier root:
+  - `atelier-cli artist init &lt;artist-name&gt;`
+- Delete an artist (run from the atelier root, requires full directory name, e.g., artist-van-gogh):
+  - `atelier-cli artist delete &lt;artist-full-name&gt;`
+
+Make targets:
+```bash
+# Initialize/delete from the atelier's Makefile
+make artist-init NAME=van-gogh
+make artist-delete FULL=artist-van-gogh
+```
 
 This atelier provides a structured yet flexible environment for software development using Git submodules and the atelier metaphor.

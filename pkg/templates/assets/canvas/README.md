@@ -16,12 +16,10 @@ This is your actual development workspace - a complete, independent software pro
 
 ```
 canvas/
-├── .git/                    # Independent Git repository
+├── .git/                   # Independent Git repository
 ├── README.md               # This project documentation
 ├── GEMINI.md               # AI pair programming context
-├── src/                    # Source code directory
 ├── tests/                  # Test files and test suites
-├── docs/                   # Project documentation
 ├── .gitignore              # Git ignore patterns
 └── [project-specific files]
 ```
@@ -36,10 +34,13 @@ canvas/
 ## 🔧 Development Guidelines
 
 ### Code Organization
-- Keep source code in `src/` directory
 - Place tests in `tests/` directory
-- Use `docs/` for project documentation
-- Follow your team's coding standards
+- Follow the idiomatic patterns of the artist you are e.g artist-golang expects idiomatic modern go patterns 
+
+## 📚 Documentation
+
+- **README.md**: Human-readable project guide (this file)
+- **GEMINI.md**: AI pair programming context and patterns
 
 ### Git Workflow
 
@@ -47,12 +48,22 @@ canvas/
   - Example: git add -A && git commit -m "feat: changes" && git push
 - Major commit (this canvas only):
   - Run: make push
-  - This calls the engine [util/git/push-engine.sh](util/git/push-engine.sh:1) to:
+  - This calls the CLI atelier-cli canvas push to:
     - Auto-stage and commit any working tree changes in this canvas (single commit)
     - Push the canvas to its remote
 - Notes:
   - This canvas has no submodules beneath it; make push is non-recursive here.
   - AUTO_COMMIT_DEFAULT=true enables auto-staging and committing.
+
+### Atelier Commands at this level
+- Push only this canvas (non-recursive):
+  - CLI: `atelier-cli canvas push [--dry-run] [--quiet] [--force]`
+  - Make: `make push`
+- Notes:
+  - Init/Delete for canvases are managed from the artist directory:
+    - Init: `atelier-cli canvas init &lt;canvas-name&gt;`
+    - Delete: `atelier-cli canvas delete &lt;canvas-full-name&gt;` (e.g., canvas-example)
+  - Commands are scope-aware: they must be run at the correct level (atelier, artist, canvas) per the CLI’s cobra validation.
 
 ### Best Practices
 - ✅ Write tests for new features
@@ -61,27 +72,10 @@ canvas/
 - ✅ Follow security best practices
 - ✅ Review code before committing
 
-## 🎯 Project Goals
+## 🎯 Canvas Vision and Goals
 
 *What is this project trying to achieve?*
 
 *What technologies and frameworks are you using?*
-
-*Who is the target audience?*
-
-*What are the success criteria?*
-
-## 🤝 Contributing
-
-*How should others contribute to this project?*
-
-*What are the coding standards and conventions?*
-
-*How do you want to collaborate?*
-
-## 📚 Documentation
-
-- **README.md**: Human-readable project guide (this file)
-- **GEMINI.md**: AI pair programming context and patterns
 
 Happy coding! 🚀✨

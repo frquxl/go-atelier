@@ -25,9 +25,7 @@ artist/
     ├── .git/              # Canvas's Git repository
     ├── README.md          # Project documentation
     ├── GEMINI.md          # Project AI context
-    ├── src/               # Source code
     ├── tests/             # Test files
-    └── docs/              # Project documentation
 ```
 
 ## 🚀 Working with Canvases
@@ -54,13 +52,18 @@ Think of yourself as an artist in a studio:
 
 Each canvas represents a complete, independent project that you can develop, deploy, and maintain separately while being organized thematically within this artist workspace.
 
+## 📚 Documentation
+
+- **README.md**: Human-readable artist and project overview (this file)
+- **GEMINI.md**: AI pair programming context for this artist's projects
+
 ### Git Workflow
 
 - Day-to-day: use regular Git in this artist repo as you normally would:
   - Example: git add -A && git commit -m "feat: changes" && git push
 - Major recursive commit (this artist and all canvases beneath it):
   - From this directory, run: make push
-  - This invokes the engine [util/git/push-engine.sh](util/git/push-engine.sh:1) to:
+  - This invokes the CLI atelier-cli artist push to:
     - Recurse through all canvases in this artist
     - Commit and push canvases first (if changes)
     - Stage updated canvas pointers and any artist working tree changes
@@ -69,9 +72,18 @@ Each canvas represents a complete, independent project that you can develop, dep
   - This artist is a submodule of the atelier (root). To roll up multiple artists and the root in one go, run make push at the atelier root.
   - AUTO_COMMIT_DEFAULT=true enables auto-staging and auto-commit for working tree and pointer updates.
 
-## 📚 Documentation
-
-- **README.md**: Human-readable artist and project overview (this file)
-- **GEMINI.md**: AI pair programming context for this artist's projects
+  ### Atelier Commands at this level
+- Push this artist recursively (canvases → artist):
+  - CLI: `atelier-cli artist push [--dry-run] [--quiet] [--force]`
+  - Make: `make push`
+- Manage canvases from this artist directory:
+  - Init a new canvas: `atelier-cli canvas init &lt;canvas-name&gt;`
+  - Delete a canvas (requires full directory name, e.g., canvas-example): `atelier-cli canvas delete &lt;canvas-full-name&gt;`
+  - Make equivalents:
+    - `make canvas-init NAME=example`
+    - `make canvas-delete FULL=canvas-example`
+- Notes:
+  - To delete an entire artist, run from the atelier root: `atelier-cli artist delete &lt;artist-full-name&gt;`
+  - Commands are scope-aware: they must be run at the correct level (atelier, artist, canvas) per the CLI’s cobra validation.
 
 Keep creating! 🎨
