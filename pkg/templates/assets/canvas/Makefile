@@ -84,6 +84,10 @@ docs: ## Generate documentation
 	# godoc -http=:6060
 	# cargo doc
 
+# Git operations
+push: ## Major commit: push this canvas (no recursion below)
+	@../../util/git/push-engine.sh
+
 # Maintenance
 clean: ## Clean build artifacts and temporary files
 	@echo "Cleaning up..."

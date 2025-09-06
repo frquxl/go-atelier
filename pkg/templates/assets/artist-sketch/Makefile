@@ -24,6 +24,13 @@ list-canvases: ## List all canvas submodules in this artist
 	@echo "Canvas submodules in this artist:"
 	@git submodule status | awk '{print "  - " $$2}'
 
+# Git push operations
+push: ## Major recursive commit: push this artist and all canvases
+	@../util/git/push-engine.sh
+
+push-canvases: ## Alias: same as 'make push' (engine recurses by default)
+	@../util/git/push-engine.sh
+
 # Maintenance
 clean: ## Clean build artifacts and temporary files
 	@echo "Cleaning up artist workspace..."

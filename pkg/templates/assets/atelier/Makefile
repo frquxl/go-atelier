@@ -24,6 +24,10 @@ update: ## Update all submodules to latest
 status: ## Show status of all submodules
 	git submodule status --recursive
 
+# Git push operations
+push: ## Major recursive commit: push atelier, all artists, and all canvases
+	@./util/git/push-engine.sh
+
 # Development workflow
 build: ## Build all projects in the atelier
 	@echo "Building all projects..."

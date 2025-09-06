@@ -21,3 +21,5 @@ COPY in readme snippets and GEMINI workflow snippets?
 
 11. becasue the first task for a user is to setup their git config and or remotes, the subsequent cli commands could inherit the config from those and emulate it, so artist create could theoretically make a remote repo and push to it immediately, same for canvases, and for delete it could also delete the remote repos
 
+12. need to stop ai's overwritn gthe established readme, gemini and makefile layouts
+

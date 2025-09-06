@@ -42,10 +42,17 @@ canvas/
 - Follow your team's coding standards
 
 ### Git Workflow
-- **Independent repository**: This canvas has its own Git history
-- **Regular commits**: Commit early and often
-- **Descriptive messages**: Use clear commit messages
-- **Branch strategy**: Use feature branches for new work
+
+- Day-to-day: use regular Git in this canvas repo as you normally would:
+  - Example: git add -A && git commit -m "feat: changes" && git push
+- Major commit (this canvas only):
+  - Run: make push
+  - This calls the engine [util/git/push-engine.sh](util/git/push-engine.sh:1) to:
+    - Auto-stage and commit any working tree changes in this canvas (single commit)
+    - Push the canvas to its remote
+- Notes:
+  - This canvas has no submodules beneath it; make push is non-recursive here.
+  - AUTO_COMMIT_DEFAULT=true enables auto-staging and committing.
 
 ### Best Practices
 - ✅ Write tests for new features

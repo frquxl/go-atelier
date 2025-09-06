@@ -41,6 +41,15 @@ artist/
 - **Artist Coordination**: Manage relationships between canvases
 - **Version Management**: Decide which canvas versions to include
 
+### Git Workflow
+**AI Pair Programming Context:**
+- Fix .gitmodules URLs immediately: Change `./canvas-name` to `git@github.com:user/canvas-name.git`
+- Create GitHub repos first: Use `gh repo create user/repo --public --source canvas-dir --push`
+- Update after canvas changes: `git add canvas-name && git commit -m "Update canvas"`
+- Push artist changes: `git push` to update the artist repository
+- Check canvas status: `git submodule status` shows current commit hashes
+- Initialize new canvases: `git submodule update --init canvas-name`
+
 ### Context Awareness
 - **Artist Level**: Understand the grouping theme and purpose
 - **Canvas Level**: Respect each canvas's independence

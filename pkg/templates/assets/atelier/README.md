@@ -51,6 +51,21 @@ atelier/
 - **Version control**: Each level has its own Git history
 - **Independence**: Projects don't interfere with each other
 
+### Git Workflow
+
+- Day-to-day: use regular Git in each repo (canvas, artist, or atelier) as you normally would:
+  - Example: cd artist-van-gogh/canvas-sunflowers && git add -A && git commit -m "feat: changes" && git push
+- Major recursive commit (end-of-day, multiple canvases/artists touched):
+  - From the atelier root, run: make push
+  - This invokes the engine [bash.push-engine.sh()](util/git/push-engine.sh:1) to:
+    - Recurse through all artists and their canvases
+    - Commit and push canvases first (if changes)
+    - Commit and push artists with updated canvas pointers (single combined commit per artist)
+    - Commit and push the atelier with updated artist pointers (single combined commit)
+- Notes:
+  - AUTO_COMMIT_DEFAULT=true will auto-stage and auto-commit working tree changes and pointer updates.
+  - The engine is non-interactive by default and designed for major roll-ups; prefer manual Git for normal incremental commits.
+
 ## 📚 Documentation
 
 - **README.md** (this file): Human-readable workspace guide

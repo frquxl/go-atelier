@@ -44,6 +44,14 @@ atelier/
 - **Artist updates**: Track canvas versions within artists
 - **Atelier updates**: Track artist versions in main repository
 
+**AI Pair Programming Context:**
+- Always use SSH URLs in .gitmodules (e.g., `git@github.com:user/repo.git`) - avoid relative paths like `./repo`
+- When creating new submodules: Use `gh repo create` to create GitHub repo first, then push content
+- Update parent repos after submodule changes: `git add submodule && git commit -m "Update submodule"`
+- Force push rewritten history when fixing .gitmodules: `git push --force` (use carefully)
+- Check submodule status: `git submodule status` to see current commit hashes
+- Initialize new submodules: `git submodule update --init --recursive`
+
 ### Context Awareness
 - Always identify which level (atelier/artist/canvas) you're working in
 - Respect the independence of each canvas's Git repository

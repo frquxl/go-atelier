@@ -54,6 +54,21 @@ Think of yourself as a gallery artist:
 
 Each canvas represents a complete, independent project that you can develop, deploy, and maintain separately while being organized thematically within this artist workspace.
 
+### Git Workflow
+
+- Day-to-day: use regular Git in this artist repo as you normally would:
+  - Example: git add -A && git commit -m "feat: changes" && git push
+- Major recursive commit (this artist and all canvases beneath it):
+  - From this directory, run: make push
+  - This invokes the engine [util/git/push-engine.sh](util/git/push-engine.sh:1) to:
+    - Recurse through all canvases in this artist
+    - Commit and push canvases first (if changes)
+    - Stage updated canvas pointers and any artist working tree changes
+    - Create a single combined artist commit and push it
+- Notes:
+  - This artist is a submodule of the atelier (root). To roll up multiple artists and the root in one go, run make push at the atelier root.
+  - AUTO_COMMIT_DEFAULT=true enables auto-staging and auto-commit for working tree and pointer updates.
+
 ## 📚 Documentation
 
 - **README.md**: Human-readable artist and project overview (this file)
