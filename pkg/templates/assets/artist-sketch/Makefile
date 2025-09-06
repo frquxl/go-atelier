@@ -28,9 +28,6 @@ list-canvases: ## List all canvas submodules in this artist
 push: ## Major recursive commit: push this artist and all canvases
 	@atelier-cli artist push
 
-push-canvases: ## Alias: same as 'make push' (engine recurses by default)
-	@atelier-cli artist push
-
 # Maintenance
 clean: ## Clean build artifacts and temporary files
 	@echo "Cleaning up artist workspace..."
@@ -41,34 +38,12 @@ clean: ## Clean build artifacts and temporary files
 	find . -type d -name "build" -exec rm -rf {} +
 	find . -type d -name "dist" -exec rm -rf {} +
 
-# Canvas management helpers (uncomment and customize as needed)
-# add-canvas: ## Add a new canvas submodule
-#	@echo "To add a new canvas:"
-#	@echo "1. Create the canvas: atelier-cli canvas init <canvas-name>"
-#	@echo "2. Or manually: git submodule add <repo-url> canvas-<canvas-name>"
-#	@echo "3. Then commit: git commit -m 'feat: add canvas <canvas-name>'"
-
-# Workflow helpers (uncomment and customize)
-# build-all: ## Build all canvases in this artist
-#	@echo "Building all canvases..."
-#	@for dir in canvas-*; do \
-#		if [ -d "$$dir" ]; then \
-#			echo "Building $$dir..."; \
-#			(cd "$$dir" && make build 2>/dev/null || echo "No build target in $$dir"); \
-#		fi \
-#	done
-
-# test-all: ## Run tests for all canvases in this artist
-#	@echo "Testing all canvases..."
-#	@for dir in canvas-*; do \
-#		if [ -d "$$dir" ]; then \
-#			echo "Testing $$dir..."; \
-#			(cd "$$dir" && make test 2>/dev/null || echo "No test target in $$dir"); \
-#		fi \
-#	done
 # Artist-level canvas management
 canvas-init: ## Initialize a new canvas in this artist (NAME=&lt;name&gt;)
 	@atelier-cli canvas init $(NAME)
 
 canvas-delete: ## Delete a canvas in this artist (FULL=&lt;canvas-full-name&gt;)
 	@atelier-cli canvas delete $(FULL)
+
+# Artist-specific targets (uncomment and customize as needed)
+# add your special make commands from here

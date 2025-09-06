@@ -101,6 +101,10 @@ clean: ## Clean build artifacts and temporary files
 	find . -type d -name "build" -exec rm -rf {} +
 	find . -type d -name "dist" -exec rm -rf {} +
 
+
+# Canvas-specific targets (uncomment and customize as needed)
+# add your special make commands from here
+
 # Development helpers (uncomment and customize as needed)
 # dev: ## Start development server
 # dev-server: ## Run development server with hot reload

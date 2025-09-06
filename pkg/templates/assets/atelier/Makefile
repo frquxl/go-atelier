@@ -54,22 +54,12 @@ clean: ## Clean build artifacts and temporary files
 	find . -type d -name "build" -exec rm -rf {} +
 	find . -type d -name "dist" -exec rm -rf {} +
 
-# Project-specific targets (uncomment and customize as needed)
-# docker-build: ## Build Docker images
-# docker-run: ## Run Docker containers
-# docker-stop: ## Stop Docker containers
-# deploy: ## Deploy to production
-# lint: ## Run linting tools
-# format: ## Format code
-# docs: ## Generate documentation
-
-# Environment-specific (uncomment and customize)
-# dev: ## Development environment setup
-# staging: ## Staging environment setup
-# prod: ## Production environment setup
 # Atelier-level artist management
 artist-init: ## Initialize a new artist (NAME=&lt;name&gt;)
 	@atelier-cli artist init $(NAME)
 
 artist-delete: ## Delete an artist (FULL=&lt;artist-full-name&gt;)
 	@atelier-cli artist delete $(FULL)
+
+# Atelier-specific targets (uncomment and customize as needed)
+# add your special make commands from here
