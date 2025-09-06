@@ -67,6 +67,35 @@
   - Prompts for confirmation before deletion.
   - Deinitializes the canvas submodule, removes it from Git, and deletes the directory.
   - Commits changes to the parent artist repository.
+
+### atelier push
+- **Purpose**: Pushes changes across the atelier hierarchy with automatic recursion.
+- **Usage**: `atelier-cli push [--dry-run] [--quiet] [--force]`
+- **Functionality**:
+  - Must be run from within an atelier directory (detects `.atelier` marker).
+  - Recursively pushes all artists and their canvases in correct order (canvases → artists → atelier).
+  - Auto-commits uncommitted changes and creates single combined commits per level.
+  - Supports dry-run mode to preview actions without making changes.
+  - Non-interactive by default; uses the Git Push Engine for orchestration.
+
+### artist push
+- **Purpose**: Pushes changes within an artist studio with canvas recursion.
+- **Usage**: `atelier-cli artist push [--dry-run] [--quiet] [--force]`
+- **Functionality**:
+  - Must be run from within an artist directory (detects `.artist` marker).
+  - Recursively pushes all canvases first, then creates combined artist commit.
+  - Auto-commits uncommitted changes and updated submodule pointers.
+  - Supports dry-run mode to preview actions without making changes.
+  - Uses the Git Push Engine for proper submodule handling.
+
+### canvas push
+- **Purpose**: Pushes changes for a single canvas.
+- **Usage**: `atelier-cli canvas push [--dry-run] [--quiet] [--force]`
+- **Functionality**:
+  - Must be run from within a canvas directory (detects `.canvas` marker).
+  - Pushes the canvas repository with auto-commit for uncommitted changes.
+  - Supports dry-run mode to preview actions without making changes.
+  - Uses the Git Push Engine for consistent behavior.
   
 ## Project Structure
 - **`main.go`**: CLI entry point.
@@ -76,6 +105,7 @@
   - **`pkg/fs`**: Low-level filesystem utilities.
   - **`pkg/gitutil`**: Wrappers for executing Git commands.
   - **`pkg/templates`**: Manages the embedded boilerplate files.
+  - **`pkg/push-engine`**: Git Push Engine for hierarchical repository management. See [pkg/push-engine/README.md](pkg/push-engine/README.md) and [pkg/push-engine/ENGINE-MANUAL.md](pkg/push-engine/ENGINE-MANUAL.md) for detailed documentation.
 - **`test/e2e`**: Contains the end-to-end test suite for the application.
 
 ## AI Context Patterns

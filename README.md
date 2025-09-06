@@ -7,6 +7,7 @@ A metaphor-driven CLI tool for software project management using the atelier/art
 - **Metaphor-Driven Interface**: Uses atelier/artist/canvas metaphors for intuitive project organization.
 - **3-Level Git Submodule Architecture**: Automatically scaffolds a nested Git repository structure (`atelier` -> `artist` -> `canvas`) for clean version control separation.
 - **Context-Aware Commands**: Ensures commands like `artist init` and `canvas init` are run in the correct directory context.
+- **Hierarchical Git Push Engine**: Provides `push` commands that recursively commit and push changes across the entire atelier/artist/canvas hierarchy with proper submodule handling.
 - **Boilerplate Generation**: Creates useful starter files (`README.md`, `GEMINI.md`, `Makefile`, `.gitignore`) from an embedded template system.
 
 ## Prerequisites
@@ -87,6 +88,25 @@ cd artist-picasso
 atelier-cli canvas delete canvas-guernica
 ```
 
+### Push Changes
+
+```bash
+# Push all changes from atelier root (recurses into all artists/canvases)
+cd atelier-my-project
+atelier-cli push
+
+# Push changes for a specific artist (recurses into its canvases)
+cd artist-picasso
+atelier-cli artist push
+
+# Push changes for a specific canvas
+cd canvas-guernica
+atelier-cli canvas push
+
+# Preview what would be pushed without making changes
+atelier-cli push --dry-run
+```
+
 ## Development & Testing
 
 All common development tasks are managed through the `Makefile`.
@@ -107,7 +127,8 @@ All common development tasks are managed through the `Makefile`.
 │   ├── engine/          # Core application logic
 │   ├── fs/              # Filesystem utilities
 │   ├── gitutil/         # Git command utilities
-│   └── templates/       # Embedded boilerplate files
+│   ├── templates/       # Embedded boilerplate files
+│   └── push-engine/     # Git Push Engine for hierarchical commits
 ├── test/e2e/            # End-to-end tests
 ├── go.mod
 └── Makefile

@@ -4,45 +4,45 @@ A detailed guide for using and understanding the Git Push Engine that orchestrat
 
 ## Quick Start
 
-- From a canvas: run: make push
-- From an artist: run: make push
-- From the atelier root: run: make push
+- From a canvas: run: `atelier-cli canvas push`
+- From an artist: run: `atelier-cli artist push`
+- From the atelier root: run: `atelier-cli push`
 
 Defaults:
 - Recurses automatically at artist and atelier levels (no flags required).
 - Auto-commits staged and working-tree changes with a single combined commit per level.
 - Non-interactive by default; confirmations are auto-accepted.
 
-See the day-to-day summary in [README](util/git/README.md:1). For full details, continue below.
+See the day-to-day summary in [README](pkg/push-engine/README.md:1). For full details, continue below.
 
 ## Components
 
-- Orchestrator: [push-engine.sh](util/git/push-engine.sh:1)
-- Level delegates: [canvas-push.sh](util/git/canvas-push.sh:1), [artist-push.sh](util/git/artist-push.sh:1), [atelier-push.sh](util/git/atelier-push.sh:1)
-- Helpers: [git-helpers.sh](util/git/git-helpers.sh:1)
-- Config: [config.sh](util/git/config.sh:1)
+- Orchestrator: [push-engine.sh](pkg/push-engine/push-engine.sh:1)
+- Level delegates: [canvas-push.sh](pkg/push-engine/canvas-push.sh:1), [artist-push.sh](pkg/push-engine/artist-push.sh:1), [atelier-push.sh](pkg/push-engine/atelier-push.sh:1)
+- Helpers: [git-helpers.sh](pkg/push-engine/git-helpers.sh:1)
+- Config: [config.sh](pkg/push-engine/config.sh:1)
 
 Key helper functions:
-- [bash.detect_level()](util/git/git-helpers.sh:25)
-- [bash.find_artists()](util/git/git-helpers.sh:60), [bash.find_canvases()](util/git/git-helpers.sh:64)
-- [bash.get_repo_info()](util/git/git-helpers.sh:38)
-- [bash.has_uncommitted_changes()](util/git/git-helpers.sh:76), [bash.has_unpushed_commits()](util/git/git-helpers.sh:69)
-- [bash.is_submodule_modified()](util/git/git-helpers.sh:86)
-- [bash.safe_git_command()](util/git/git-helpers.sh:94)
-- [bash.validate_git_repo()](util/git/git-helpers.sh:107), [bash.validate_remote()](util/git/git-helpers.sh:115)
-- [bash.confirm_action()](util/git/git-helpers.sh:144)
+- [bash.detect_level()](pkg/push-engine/git-helpers.sh:25)
+- [bash.find_artists()](pkg/push-engine/git-helpers.sh:60), [bash.find_canvases()](pkg/push-engine/git-helpers.sh:64)
+- [bash.get_repo_info()](pkg/push-engine/git-helpers.sh:38)
+- [bash.has_uncommitted_changes()](pkg/push-engine/git-helpers.sh:76), [bash.has_unpushed_commits()](pkg/push-engine/git-helpers.sh:69)
+- [bash.is_submodule_modified()](pkg/push-engine/git-helpers.sh:86)
+- [bash.safe_git_command()](pkg/push-engine/git-helpers.sh:94)
+- [bash.validate_git_repo()](pkg/push-engine/git-helpers.sh:107), [bash.validate_remote()](pkg/push-engine/git-helpers.sh:115)
+- [bash.confirm_action()](pkg/push-engine/git-helpers.sh:144)
 
 ## Usage
 
 The engine detects the current level and delegates to the appropriate push script.
 
-### Make targets
+### CLI Commands
 
-- Canvas directory: make push
+- Canvas directory: `atelier-cli canvas push`
   - Runs the engine scoped to the canvas. Non-recursive.
-- Artist directory: make push
+- Artist directory: `atelier-cli artist push`
   - Recurses into all canvases, commits/pushes canvases first, then makes one combined artist commit and pushes.
-- Atelier root: make push
+- Atelier root: `atelier-cli push`
   - Recurses into all artists and canvases, commits/pushes artists after canvases, then makes one combined atelier commit and pushes.
 
 ### Direct script usage
@@ -50,10 +50,10 @@ The engine detects the current level and delegates to the appropriate push scrip
 You can run the orchestrator directly:
 
 bash
-util/git/push-engine.sh [OPTIONS] [LEVEL_ARGS...]
+pkg/push-engine/push-engine.sh [OPTIONS] [LEVEL_ARGS...]
 
 Options:
-- --dry-run: Preview actions; always exits 0 (see [push-engine.sh](util/git/push-engine.sh:133)).
+- --dry-run: Preview actions; always exits 0 (see [push-engine.sh](pkg/push-engine/push-engine.sh:133)).
 - --quiet: Reduce verbosity.
 - --force: Pass through to delegates for future use.
 
@@ -65,7 +65,7 @@ Note: Default recursion at artist/atelier levels means you typically do not need
 
 ### Environment variables
 
-From [config.sh](util/git/config.sh:16):
+From [config.sh](pkg/push-engine/config.sh:16):
 - DRY_RUN_DEFAULT=false
 - VERBOSE_DEFAULT=true
 - CONFIRM_PUSH_DEFAULT=true
@@ -75,42 +75,42 @@ From [config.sh](util/git/config.sh:16):
 - AUTO_COMMIT_MESSAGE="engine: auto-commit uncommitted changes"
 
 Additional behavior:
-- Non-interactive confirmations are enabled by the orchestrator via ENGINE_ASSUME_YES=true in [push-engine.sh](util/git/push-engine.sh:14), which makes [bash.confirm_action()](util/git/git-helpers.sh:144) return success without prompting.
+- Non-interactive confirmations are enabled by the orchestrator via ENGINE_ASSUME_YES=true in [push-engine.sh](pkg/push-engine/push-engine.sh:14), which makes [bash.confirm_action()](pkg/push-engine/git-helpers.sh:144) return success without prompting.
 - You can force interactive prompts by exporting ENGINE_ASSUME_YES=false and CONFIRM_PUSH_DEFAULT=true.
-- LOG_LEVEL=debug enables detailed [bash.log_debug()](util/git/git-helpers.sh:17) output.
+- LOG_LEVEL=debug enables detailed [bash.log_debug()](pkg/push-engine/git-helpers.sh:17) output.
 
 ### Typical workflows
 
-- End-of-day roll-up at atelier: make push
-- Ship all changes in a single artist: cd artist-name && make push
-- Push a single canvas: cd artist-name/canvas-name && make push
-- Dry-run preview anywhere: util/git/push-engine.sh --dry-run
+- End-of-day roll-up at atelier: `atelier-cli push`
+- Ship all changes in a single artist: cd artist-name && `atelier-cli artist push`
+- Push a single canvas: cd artist-name/canvas-name && `atelier-cli canvas push`
+- Dry-run preview anywhere: `atelier-cli push --dry-run` (from appropriate directory)
 
 ## What the engine does
 
 The engine ensures correct ordering and single-commit semantics at each level:
 
-1) Canvas ([canvas-push.sh](util/git/canvas-push.sh:1))
+1) Canvas ([canvas-push.sh](pkg/push-engine/canvas-push.sh:1))
 - If there are uncommitted changes and AUTO_COMMIT_DEFAULT=true: stage and commit once; push.
 - Otherwise, push any unpushed commits.
 
-2) Artist ([artist-push.sh](util/git/artist-push.sh:1))
+2) Artist ([artist-push.sh](pkg/push-engine/artist-push.sh:1))
 - Recurses into all canvases (delegate call).
 - Stages updated canvas pointers and any artist working-tree changes.
 - Creates one combined artist commit if anything is staged; pushes.
 
-3) Atelier ([atelier-push.sh](util/git/atelier-push.sh:1))
+3) Atelier ([atelier-push.sh](pkg/push-engine/atelier-push.sh:1))
 - Recurses into all artists (each of which recurses into canvases).
 - Stages updated artist pointers and any atelier working-tree changes.
 - Creates one combined atelier commit if anything is staged; pushes.
 
 ### Detection and decisions
 
-- Level detection: [bash.detect_level()](util/git/git-helpers.sh:25)
-- Submodule modification: [bash.is_submodule_modified()](util/git/git-helpers.sh:86)
-- Uncommitted changes: [bash.has_uncommitted_changes()](util/git/git-helpers.sh:76)
-- Unpushed commits: [bash.has_unpushed_commits()](util/git/git-helpers.sh:69)
-- Repo/remote validation: [bash.validate_git_repo()](util/git/git-helpers.sh:107), [bash.validate_remote()](util/git/git-helpers.sh:115)
+- Level detection: [bash.detect_level()](pkg/push-engine/git-helpers.sh:25)
+- Submodule modification: [bash.is_submodule_modified()](pkg/push-engine/git-helpers.sh:86)
+- Uncommitted changes: [bash.has_uncommitted_changes()](pkg/push-engine/git-helpers.sh:76)
+- Unpushed commits: [bash.has_unpushed_commits()](pkg/push-engine/git-helpers.sh:69)
+- Repo/remote validation: [bash.validate_git_repo()](pkg/push-engine/git-helpers.sh:107), [bash.validate_remote()](pkg/push-engine/git-helpers.sh:115)
 
 ### Commit strategy
 
@@ -127,7 +127,7 @@ The engine ensures correct ordering and single-commit semantics at each level:
 
 ### Exit codes
 
-Defined in [config.sh](util/git/config.sh:49):
+Defined in [config.sh](pkg/push-engine/config.sh:49):
 - EXIT_SUCCESS=0
 - EXIT_ERROR=1
 - EXIT_INVALID_LEVEL=2
