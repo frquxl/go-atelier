@@ -18,7 +18,7 @@ func CreateBoilerplate(basePath, projectType string) error {
 	// Define files to be copied and potentially renamed
 	files := map[string]string{
 		"README.md":    "README.md",
-		"GEMINI.md":    "GEMINI.md",
+		"AGENTS.md":    "AGENTS.md",
 		"Makefile":     "Makefile",
 		"gitignore":    ".gitignore",
 		"geminiignore": ".geminiignore",

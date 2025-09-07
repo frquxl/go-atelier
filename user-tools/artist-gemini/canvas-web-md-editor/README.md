@@ -96,6 +96,6 @@ web-app/
 ## 📚 Documentation
 
 -   **README.md**: Human-readable project guide (this file).
--   **GEMINI.md**: AI pair programming context and patterns for this specific canvas.
+-   **AGENTS.md**: AI pair programming context and patterns for this specific canvas.
 
 Happy coding! 🚀✨

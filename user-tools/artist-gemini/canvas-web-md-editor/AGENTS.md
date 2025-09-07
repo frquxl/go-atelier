@@ -15,7 +15,7 @@ This is a project canvas for the **Web Markdown Editor**, an independent softwar
 web-app/
 ├── .git/                    # Independent Git repository (managed by isomorphic-git in IndexedDB)
 ├── README.md               # Human project documentation
-├── GEMINI.md               # AI context (this file)
+├── AGENTS.md               # AI context (this file)
 ├── public/                  # Static assets (images, favicons)
 ├── src/                     # Application source code
 │   ├── app/                 # Next.js App Router pages and layouts
@@ -89,7 +89,7 @@ web-app/
 
 ## 📚 Documentation
 -   **README.md**: Human-readable project guide.
--   **GEMINI.md**: AI pair programming context (this file).
+-   **AGENTS.md**: AI pair programming context (this file).
 -   **Code comments**: Inline documentation for complex logic.
 
 Happy coding! 🚀✨

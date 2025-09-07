@@ -8,7 +8,7 @@ A metaphor-driven CLI tool for software project management using the atelier/art
 - **3-Level Git Submodule Architecture**: Automatically scaffolds a nested Git repository structure (`atelier` -> `artist` -> `canvas`) for clean version control separation.
 - **Context-Aware Commands**: Ensures commands like `artist init` and `canvas init` are run in the correct directory context.
 - **Hierarchical Git Push Engine**: Provides `push` commands that recursively commit and push changes across the entire atelier/artist/canvas hierarchy with proper submodule handling.
-- **Boilerplate Generation**: Creates useful starter files (`README.md`, `GEMINI.md`, `Makefile`, `.gitignore`) from an embedded template system.
+- **Boilerplate Generation**: Creates useful starter files (`README.md`, `AGENTS.md`, `Makefile`, `.gitignore`) from an embedded template system.
 
 ## Prerequisites
 

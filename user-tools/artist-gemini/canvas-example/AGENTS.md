@@ -15,7 +15,7 @@ This is a project canvas - an independent software development project within th
 canvas/
 ├── .git/                    # Independent Git repository
 ├── README.md               # Human project documentation
-├── GEMINI.md               # AI context (this file)
+├── AGENTS.md               # AI context (this file)
 ├── src/                    # Source code
 ├── tests/                  # Test files
 ├── docs/                   # Documentation
@@ -88,7 +88,7 @@ canvas/
 
 ## 📚 Documentation
 - **README.md**: Human-readable project guide
-- **GEMINI.md**: AI pair programming context (this file)
+- **AGENTS.md**: AI pair programming context (this file)
 - **Code comments**: Inline documentation
 - **API docs**: Interface and usage documentation
 

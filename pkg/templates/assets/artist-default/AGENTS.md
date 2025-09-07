@@ -1,14 +1,14 @@
-# Sketch Artist AI Context
+# Artist AI Context
 
 ## 👨‍🎨 Artist Overview
-This is a sketch artist workspace within the atelier, designed for rapid prototyping and experimental projects. Think of it like a sandbox for random projects
+This is an artist workspace within the atelier, containing multiple project canvases that are thematically related.
 
 ## 🎯 Artist Purpose
-**Sketch Artist workspaces** are for:
-- **Rapid Prototyping**: Quickly build and test ideas.
-- **Experimentation**: Explore new technologies or approaches without impacting core projects.
-- **Proof-of-Concepts**: Develop minimal viable products (MVPs) or demonstrate feasibility.
-- **Drafting**: Create initial versions of projects that may later be refined in a 'gallery' artist workspace.
+**Artist workspaces** represent thematic or organizational groupings of related software projects. This could be:
+- Projects using the same technology stack
+- Projects for the same client or organization
+- Projects sharing similar goals or patterns
+- Personal projects with common themes
 
 ## 📁 Workspace Structure
 ```
@@ -16,19 +16,19 @@ artist/
 ├── .git/                    # Artist's Git repository (submodule)
 ├── .gitmodules            # Tracks canvas submodules
 ├── README.md              # Human documentation
-├── GEMINI.md              # AI context (this file)
+├── AGENTS.md              # AI context (this file)
 └── canvas-*/              # Project canvases (Git submodules)
     ├── .git/              # Canvas repository (submodule)
     ├── README.md          # Project documentation
-    └── GEMINI.md          # Project AI context
+    └── AGENTS.md          # Project AI context
 ```
 
 ## 🤖 AI Pair Programming Guidelines
 
 ### Understanding This Artist
-- **Identity**: Focus on speed, iteration, and minimal viable products.
-- **Scope**: Projects here are typically short-lived, experimental, or early-stage.
-- **Relationships**: Canvases might be independent experiments or early drafts of larger projects.
+- **Identity**: What theme, technology, or purpose groups these canvases?
+- **Scope**: What types of projects belong in this artist workspace?
+- **Relationships**: How do the canvases in this artist relate to each other?
 
 ### Canvas Management
 - Each canvas is an independent Git repository.
@@ -54,8 +54,8 @@ artist/
 ### 📚 Available Documentation
 - **Artist README**: Overview of the artist's purpose and canvases.
 - **Canvas READMEs**: Individual project documentation.
-- **Artist GEMINI**: AI context for the artist's workspace (this file).
-- **Canvas GEMINIs**: AI context for individual projects.
+- **Artist AGENTS**: AI context for the artist's workspace (this file).
+- **Canvas AGENTSs**: AI context for individual projects.
 - **.gitmodules files**: Track submodule relationships for canvases
 
 ### Git Workflows and info

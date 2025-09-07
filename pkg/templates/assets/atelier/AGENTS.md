@@ -15,16 +15,16 @@ atelier/
 ├── .git/                    # Main atelier repository
 ├── .gitmodules            # Tracks artist submodules
 ├── README.md              # Human documentation
-├── GEMINI.md              # AI context (this file)
+├── AGENTS.md              # AI context (this file)
 ├── artist-*/              # Artist workspaces (Git submodules)
 │   ├── .git/              # Artist submodule repository
 │   ├── .gitmodules        # Tracks canvas submodules
 │   ├── README.md          # Artist documentation
-│   ├── GEMINI.md          # Artist AI context
+│   ├── AGENTS.md          # Artist AI context
 │   └── canvas-*/          # Project canvases (Git submodules)
 │       ├── .git/          # Canvas submodule repository
 │       ├── README.md      # Project documentation
-│       └── GEMINI.md      # Project AI context
+│       └── AGENTS.md      # Project AI context
 ```
 
 ## 🤖 AI Pair Programming Guidelines
@@ -49,7 +49,7 @@ atelier/
 
 ### 📚 Available Documentation
 - **README.md files**: Human-readable guides at each level
-- **GEMINI.md files**: AI context for each workspace level
+- **AGENTS.md files**: AI context for each workspace level
 - **.gitmodules files**: Track submodule relationships for artists
 
 ### Git Workflows and info

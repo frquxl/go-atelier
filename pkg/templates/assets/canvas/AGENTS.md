@@ -15,7 +15,7 @@ This is a project canvas - an independent software development project within th
 canvas/
 ├── .git/                    # Independent Git repository
 ├── README.md               # Human project documentation
-├── GEMINI.md               # AI context (this file)
+├── AGENTS.md               # AI context (this file)
 ├── Makefile                # Build and development tasks
 ├── src/                    # Source code
 ├── tests/                  # Test files
@@ -81,7 +81,7 @@ canvas/
 
 ## 📚 Documentation
 - **README.md**: Human-readable project guide
-- **GEMINI.md**: AI pair programming context (this file)
+- **AGENTS.md**: AI pair programming context (this file)
 - **Code comments**: Inline documentation
 
 #### Atelier Commands at this level

@@ -42,7 +42,7 @@ func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err er
 	if err = gitutil.AddPaths(atelierPath, existingPaths(atelierPath, []string{
 		".atelier",
 		"README.md",
-		"GEMINI.md",
+		"AGENTS.md",
 		"Makefile",
 		".gitignore",
 		".geminiignore",
@@ -98,7 +98,7 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	if err = gitutil.AddPaths(artistPath, existingPaths(artistPath, []string{
 		".artist",
 		"README.md",
-		"GEMINI.md",
+		"AGENTS.md",
 		"Makefile",
 		".gitignore",
 		".geminiignore",
@@ -173,7 +173,7 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	if err = gitutil.AddPaths(canvasPath, existingPaths(canvasPath, []string{
 		".canvas",
 		"README.md",
-		"GEMINI.md",
+		"AGENTS.md",
 		"Makefile",
 		".gitignore",
 		".geminiignore",

@@ -18,7 +18,7 @@ This is your actual development workspace - a complete, independent software pro
 canvas/
 ├── .git/                   # Independent Git repository
 ├── README.md               # This project documentation
-├── GEMINI.md               # AI pair programming context
+├── AGENTS.md               # AI pair programming context
 ├── tests/                  # Test files and test suites
 ├── .gitignore              # Git ignore patterns
 └── [project-specific files]
@@ -40,7 +40,7 @@ canvas/
 ## 📚 Documentation
 
 - **README.md**: Human-readable project guide (this file)
-- **GEMINI.md**: AI pair programming context and patterns
+- **AGENTS.md**: AI pair programming context and patterns
 
 ### Git Workflow
 

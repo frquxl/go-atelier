@@ -8,7 +8,7 @@
 - **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
 - **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
 - **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
-- **Embedded Template System**: Generates README.md, GEMINI.md, Makefile, .gitignore, and .geminiignore files from templates embedded in the binary.
+- **Embedded Template System**: Generates README.md, AGENTS.md, Makefile, .gitignore, and .geminiignore files from templates embedded in the binary.
 
 ## Commands
 
@@ -22,7 +22,7 @@
   - If `--gallery` flag is used, also creates `artist-gallery` with a default `canvas-example`.
   - Sets up `.gitmodules` files to track submodule relationships.
   - Creates marker files: `.atelier`, `.artist`, and `.canvas` in respective directories.
-  - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files at each level.
+  - Generates contextual README.md, AGENTS.md, .gitignore, and .geminiignore files at each level.
   - Commits all changes with proper Git submodule setup.
 
 ### artist init
@@ -35,7 +35,7 @@
   - Creates default `canvas-example` as submodule of the artist.
   - Sets up `.gitmodules` file in artist to track canvas submodules.
   - Creates marker files: `.artist` and `.canvas` in respective directories.
-  - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files.
+  - Generates contextual README.md, AGENTS.md, .gitignore, and .geminiignore files.
   - Commits submodule relationships to both atelier and artist repositories.
 
 ### artist delete
@@ -56,7 +56,7 @@
   - Adds canvas as submodule to parent artist repository.
   - Updates artist's `.gitmodules` file to track the new canvas.
   - Creates marker file `.canvas` in the canvas directory.
-  - Generates contextual README.md, GEMINI.md, .gitignore, and .geminiignore files.
+  - Generates contextual README.md, AGENTS.md, .gitignore, and .geminiignore files.
   - Commits submodule relationship to artist repository.
 
 ### canvas delete
@@ -116,7 +116,7 @@
 - **Iterative Implementation**: Build up features incrementally, testing at each step.
 - **Update E2E Tests**: For any change in functionality, update or add to the E2E test suite in `test/e2e` to validate the behavior.
 - **Iterate Until Pass**: Fix issues and re-test until `make test` and `make e2e-test` both pass.
-- **Update Documentation**: Keep GEMINI.md and README.md current with implementation details.
+- **Update Documentation**: Keep AGENTS.md and README.md current with implementation details.
 
 ### Testing Approach
 - **Unit Tests**: Standard Go tests located alongside the code they test (primarily in the `pkg/` directory). They should be fast and focused. Run with `make test`.
@@ -126,5 +126,5 @@
 - **Feature Branches**: Create branches for new features when needed.
 - **Conventional Commits**: Use `feat:`, `fix:`, `docs:`, `refactor:`, `test:` prefixes for commit messages.
 - **Version Tagging**: Tag releases with semantic versioning (v0.1.0, v0.2.0, v1.0.0, etc.).
-- **Release Documentation**: Update GEMINI.md and README.md before tagging releases.
-- **GEMINI.md Refresh**: Always review and update GEMINI.md with current implementation details before any commit, especially before releases.
+- **Release Documentation**: Update AGENTS.md and README.md before tagging releases.
+- **AGENTS.md Refresh**: Always review and update AGENTS.md with current implementation details before any commit, especially before releases.

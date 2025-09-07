@@ -16,11 +16,11 @@ artist/
 ├── .git/                    # Artist's Git repository (submodule)
 ├── .gitmodules            # Tracks canvas submodules
 ├── README.md              # Human documentation
-├── GEMINI.md              # AI context (this file)
+├── AGENTS.md              # AI context (this file)
 └── canvas-*/              # Project canvases (Git submodules)
     ├── .git/              # Canvas repository (submodule)
     ├── README.md          # Project documentation
-    └── GEMINI.md          # Project AI context
+    └── AGENTS.md          # Project AI context
 ```
 
 ## 🤖 AI Pair Programming Guidelines
@@ -66,7 +66,7 @@ Think of this artist as:
 ## 📚 Documentation Hierarchy
 - **Artist README**: Overview of the artist's purpose and canvases
 - **Canvas READMEs**: Individual project documentation
-- **Artist GEMINI**: AI context for the artist's workspace (this file)
-- **Canvas GEMINIs**: AI context for individual projects
+- **Artist AGENTS**: AI context for the artist's workspace (this file)
+- **Canvas AGENTSs**: AI context for individual projects
 
 This artist workspace provides a focused environment for developing related software projects within the broader atelier context.

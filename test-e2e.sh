@@ -114,7 +114,7 @@ atelier-cli init test-workspace
 assert_dir_exists "$EXPECTED_ATELIER"
 assert_file_exists "$EXPECTED_ATELIER/.atelier"
 assert_file_exists "$EXPECTED_ATELIER/README.md"
-assert_file_exists "$EXPECTED_ATELIER/GEMINI.md"
+assert_file_exists "$EXPECTED_ATELIER/AGENTS.md"
 assert_file_exists "$EXPECTED_ATELIER/Makefile"
 assert_file_exists "$EXPECTED_ATELIER/.gitignore"
 assert_file_exists "$EXPECTED_ATELIER/.geminiignore"
@@ -124,7 +124,7 @@ assert_git_repo "$EXPECTED_ATELIER"
 # Check atelier content
 assert_file_contains "$EXPECTED_ATELIER/.atelier" "atelier-test-workspace"
 assert_file_contains "$EXPECTED_ATELIER/README.md" "Atelier Workspace"
-assert_file_contains "$EXPECTED_ATELIER/GEMINI.md" "Atelier AI Context"
+assert_file_contains "$EXPECTED_ATELIER/AGENTS.md" "Atelier AI Context"
 
 # Test 2: artist init
 log_info "Test 2: Running 'atelier-cli artist init test-artist'..."
@@ -135,7 +135,7 @@ atelier-cli artist init test-artist
 assert_dir_exists "$EXPECTED_ARTIST"
 assert_file_exists "$EXPECTED_ARTIST/.artist"
 assert_file_exists "$EXPECTED_ARTIST/README.md"
-assert_file_exists "$EXPECTED_ARTIST/GEMINI.md"
+assert_file_exists "$EXPECTED_ARTIST/AGENTS.md"
 assert_file_exists "$EXPECTED_ARTIST/Makefile"
 assert_file_exists "$EXPECTED_ARTIST/.gitignore"
 assert_file_exists "$EXPECTED_ARTIST/.geminiignore"
@@ -146,7 +146,7 @@ assert_git_repo "$EXPECTED_ARTIST"
 assert_file_contains "$EXPECTED_ARTIST/.artist" "atelier-test-workspace"
 assert_file_contains "$EXPECTED_ARTIST/.artist" "artist-test-artist"
 assert_file_contains "$EXPECTED_ARTIST/README.md" "Artist Workspace"
-assert_file_contains "$EXPECTED_ARTIST/GEMINI.md" "Artist AI Context"
+assert_file_contains "$EXPECTED_ARTIST/AGENTS.md" "Artist AI Context"
 
 # Verify submodule registration
 assert_submodule "." "$EXPECTED_ARTIST"
@@ -160,7 +160,7 @@ atelier-cli canvas init test-canvas
 assert_dir_exists "$EXPECTED_CANVAS"
 assert_file_exists "$EXPECTED_CANVAS/.canvas"
 assert_file_exists "$EXPECTED_CANVAS/README.md"
-assert_file_exists "$EXPECTED_CANVAS/GEMINI.md"
+assert_file_exists "$EXPECTED_CANVAS/AGENTS.md"
 assert_file_exists "$EXPECTED_CANVAS/.gitignore"
 assert_file_exists "$EXPECTED_CANVAS/.geminiignore"
 assert_file_exists "$EXPECTED_CANVAS/Makefile"
@@ -171,7 +171,7 @@ assert_file_contains "$EXPECTED_CANVAS/.canvas" "atelier-test-workspace"
 assert_file_contains "$EXPECTED_CANVAS/.canvas" "artist-test-artist"
 assert_file_contains "$EXPECTED_CANVAS/.canvas" "canvas-test-canvas"
 assert_file_contains "$EXPECTED_CANVAS/README.md" "Project Canvas"
-assert_file_contains "$EXPECTED_CANVAS/GEMINI.md" "Canvas AI Context"
+assert_file_contains "$EXPECTED_CANVAS/AGENTS.md" "Canvas AI Context"
 
 # Verify submodule registration
 assert_submodule "." "$EXPECTED_CANVAS"
@@ -264,18 +264,18 @@ log_info "Test 8: Verifying complete directory structure..."
 # ├── .git/
 # ├── .gitmodules
 # ├── README.md
-# ├── GEMINI.md
+# ├── AGENTS.md
 # ├── artist-test-artist/
 # │   ├── .artist
 # │   ├── .git/
 # │   ├── .gitmodules
 # │   ├── README.md
-# │   ├── GEMINI.md
+# │   ├── AGENTS.md
 # │   └── canvas-test-canvas/
 # │       ├── .canvas
 # │       ├── .git/
 # │       ├── README.md
-# │       └── GEMINI.md
+# │       └── AGENTS.md
 
 # Count files and directories
 atelier_files=$(find "$EXPECTED_ATELIER" -type f | wc -l)

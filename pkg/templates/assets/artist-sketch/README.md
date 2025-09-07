@@ -20,11 +20,11 @@ artist/
 ├── .git/                    # Artist's Git repository (submodule)
 ├── .gitmodules            # Tracks canvas submodules
 ├── README.md              # This artist documentation
-├── GEMINI.md              # AI context for this artist
+├── AGENTS.md              # AI context for this artist
 └── canvas-*/              # Project canvases (Git submodules)
     ├── .git/              # Canvas's Git repository
     ├── README.md          # Project documentation
-    ├── GEMINI.md          # Project AI context
+    ├── AGENTS.md          # Project AI context
     ├── tests/             # Test files
 ```
 
@@ -55,7 +55,7 @@ Each canvas represents a complete, independent project that you can develop, dep
 ## 📚 Documentation
 
 - **README.md**: Human-readable artist and project overview (this file)
-- **GEMINI.md**: AI pair programming context for this artist's projects
+- **AGENTS.md**: AI pair programming context for this artist's projects
 
 
 ### Git Workflow
