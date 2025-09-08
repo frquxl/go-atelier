@@ -7,6 +7,7 @@
 - **Metaphor-Driven Interface**: Uses atelier/artist/canvas metaphors to make CLI interactions intuitive.
 - **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
 - **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
+- **Canvas Movement**: Move canvases between artists with automatic Git submodule relationship updates.
 - **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
 - **Embedded Template System**: Generates README.md, AGENTS.md, Makefile, .gitignore, and .geminiignore files from templates embedded in the binary.
 
@@ -67,6 +68,20 @@
   - Prompts for confirmation before deletion.
   - Deinitializes the canvas submodule, removes it from Git, and deletes the directory.
   - Commits changes to the parent artist repository.
+
+### canvas move
+- **Purpose**: Moves a canvas from one artist to another, updating Git submodules and internal paths accordingly.
+- **Usage**: `atelier-cli canvas move <canvas-full-name> <new-artist-full-name>`
+- **Functionality**:
+  - Can be run from any directory within an atelier (automatically finds the atelier root).
+  - Automatically discovers which artist currently contains the target canvas.
+  - Validates that the destination artist exists and prevents naming conflicts.
+  - Removes canvas from current artist's Git submodule tracking while preserving the directory.
+  - Physically moves the canvas directory to the new artist.
+  - Adds canvas as submodule to the new artist with proper Git tracking.
+  - Updates the canvas's `.canvas` file with new artist context information.
+  - Creates appropriate commit messages in both source and destination artists.
+  - Provides comprehensive error handling with cleanup on failure.
 
 ### atelier push
 - **Purpose**: Pushes changes across the atelier hierarchy with automatic recursion.

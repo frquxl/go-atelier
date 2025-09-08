@@ -121,6 +121,24 @@ var canvasDeleteCmd = &cobra.Command{
 	},
 }
 
+var canvasMoveCmd = &cobra.Command{
+	Use:   "move <canvas-full-name> <new-artist-full-name>",
+	Short: "Move a canvas from one artist to another.",
+	Long:  `Moves a canvas from its current artist to another, updating Git submodules and internal paths accordingly.`,
+	Args:  cobra.ExactArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		canvasFullName := args[0]
+		newArtistFullName := args[1]
+
+		if err := engine.MoveCanvas(canvasFullName, newArtistFullName); err != nil {
+			return err
+		}
+
+		fmt.Printf("Canvas '%s' moved to artist '%s' successfully!\n", canvasFullName, newArtistFullName)
+		return nil
+	},
+}
+
 var canvasPushCmd = &cobra.Command{
 	Use:   "push",
 	Short: "Push changes using the git push engine",
@@ -195,4 +213,5 @@ func init() {
 	canvasCmd.AddCommand(canvasInitCmd)
 	canvasCmd.AddCommand(canvasDeleteCmd)
 	canvasCmd.AddCommand(canvasPushCmd)
+	canvasCmd.AddCommand(canvasMoveCmd)
 }

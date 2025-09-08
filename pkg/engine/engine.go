@@ -6,15 +6,17 @@ import (
 	"path/filepath"
 	"strings"
 
-	localfs "github.com/frquxl/go-atelier/pkg/fs"
+	"github.com/frquxl/go-atelier/pkg/fs"
 	"github.com/frquxl/go-atelier/pkg/gitutil"
 	"github.com/frquxl/go-atelier/pkg/templates"
 )
 
 // CreateAtelier initializes the main atelier directory and repository.
 func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err error) {
-	atelierDirName := "atelier-" + atelierBaseName
-	atelierPath = filepath.Join(basePath, atelierDirName)
+	ateliersDirName := "atelier-" + atelierBaseName
+	atelierPath = filepath.Join(basePath, ateliersDirName)
+
+	_ = templates.TemplatesFS // Dummy reference to prevent unused import error
 
 	defer func() {
 		if err != nil {
@@ -24,14 +26,14 @@ func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err er
 	}()
 
 	fmt.Println("Initializing atelier...")
-	if err = localfs.CreateDir(atelierPath); err != nil {
+	if err = fs.CreateDir(atelierPath); err != nil {
 		return "", err
 	}
 	if err = gitutil.Init(atelierPath); err != nil {
 		return "", err
 	}
 	// Write marker file
-	if err = localfs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(atelierDirName)); err != nil {
+	if err = fs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(ateliersDirName)); err != nil {
 		return "", err
 	}
 	// Create boilerplate files
@@ -58,7 +60,7 @@ func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err er
 
 // CreateArtist initializes a new artist and a default canvas within an atelier.
 func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
-	atelierDirName := filepath.Base(atelierPath)
+	ateliersDirName := filepath.Base(atelierPath)
 	artistDirName := "artist-" + artistName
 	artistPath := filepath.Join(atelierPath, artistDirName)
 
@@ -70,15 +72,15 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	}()
 
 	fmt.Println("Initializing artist...")
-	if err = localfs.CreateDir(artistPath); err != nil {
+	if err = fs.CreateDir(artistPath); err != nil {
 		return err
 	}
 	if err = gitutil.Init(artistPath); err != nil {
 		return err
 	}
 	// Write marker file
-	artistContext := fmt.Sprintf("%s\n%s", atelierDirName, artistDirName)
-	if err = localfs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
+	artistContext := fmt.Sprintf("%s\n%s", ateliersDirName, artistDirName)
+	if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
 		return err
 	}
 
@@ -140,7 +142,7 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	if len(artistLines) < 2 {
 		return fmt.Errorf("invalid .artist file format")
 	}
-	atelierName := artistLines[0]
+	ateliersName := artistLines[0]
 	artistDirName := artistLines[1]
 
 	canvasDirName := "canvas-" + canvasName
@@ -154,15 +156,15 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	}()
 
 	fmt.Println("Initializing canvas...")
-	if err = localfs.CreateDir(canvasPath); err != nil {
+	if err = fs.CreateDir(canvasPath); err != nil {
 		return err
 	}
 	if err = gitutil.Init(canvasPath); err != nil {
 		return err
 	}
 	// Write marker file
-	canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistDirName, canvasDirName)
-	if err = localfs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
+	canvasContext := fmt.Sprintf("%s\n%s\n%s", ateliersName, artistDirName, canvasDirName)
+	if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 		return err
 	}
 	// Create boilerplate files
@@ -299,6 +301,201 @@ func DeleteCanvas(artistPath, canvasFullName string) (err error) {
 
 	// No automatic commit here. User is responsible for committing the changes.
 	fmt.Printf("Canvas '%s' deleted. Remember to 'git add %s' and 'git commit' in the parent repository.\n", canvasFullName, canvasFullName)
+	return nil
+}
+
+// MoveCanvas moves a canvas from one artist to another.
+func MoveCanvas(canvasFullName, newArtistFullName string) error {
+	// Find the atelier root by walking up from current directory
+	atelierPath, err := findAtelierRoot()
+	if err != nil {
+		return fmt.Errorf("could not find atelier root: %w", err)
+	}
+
+	// Find which artist currently contains the canvas
+	currentArtistPath, err := findCanvasArtist(atelierPath, canvasFullName)
+	if err != nil {
+		return fmt.Errorf("could not find artist containing canvas %s: %w", canvasFullName, err)
+	}
+
+	// Validate that the new artist exists
+	newArtistPath := filepath.Join(atelierPath, newArtistFullName)
+	if _, err := os.Stat(newArtistPath); os.IsNotExist(err) {
+		return fmt.Errorf("new artist %s does not exist", newArtistFullName)
+	}
+
+	// Check if new artist already has a canvas with this name
+	newCanvasPath := filepath.Join(newArtistPath, canvasFullName)
+	if _, err := os.Stat(newCanvasPath); err == nil {
+		return fmt.Errorf("canvas %s already exists in artist %s", canvasFullName, newArtistFullName)
+	}
+
+	// Get current artist name for context
+	currentArtistName := filepath.Base(currentArtistPath)
+
+	fmt.Printf("Moving canvas %s from artist %s to artist %s...\n", canvasFullName, currentArtistName, newArtistFullName)
+
+	// 1. Remove canvas from current artist's git tracking (but keep the directory)
+	// First, remove from index but keep working directory
+	if err = gitutil.RunGitCommand(currentArtistPath, "rm", "--cached", canvasFullName); err != nil {
+		return fmt.Errorf("failed to remove canvas from current artist's git index: %w", err)
+	}
+
+	// Remove from .gitmodules manually
+	if err = removeFromGitmodules(currentArtistPath, canvasFullName); err != nil {
+		return fmt.Errorf("failed to remove canvas from .gitmodules: %w", err)
+	}
+
+	// 2. Move the canvas directory to the new artist
+	canvasPath := filepath.Join(currentArtistPath, canvasFullName)
+	if err = os.Rename(canvasPath, newCanvasPath); err != nil {
+		return fmt.Errorf("failed to move canvas directory: %w", err)
+	}
+
+	// 3. Update the .canvas file with new artist context
+	if err = updateCanvasContext(newCanvasPath, newArtistFullName); err != nil {
+		return fmt.Errorf("failed to update canvas context: %w", err)
+	}
+
+	// 4. Add canvas as submodule to new artist
+	if err = gitutil.AddSubmodule(newArtistPath, canvasFullName); err != nil {
+		return fmt.Errorf("failed to add canvas as submodule to new artist: %w", err)
+	}
+
+	// 5. Stage changes in both artists
+	if err = gitutil.AddPaths(currentArtistPath, ".gitmodules"); err != nil {
+		return fmt.Errorf("failed to stage .gitmodules changes in current artist: %w", err)
+	}
+	if err = gitutil.AddPaths(newArtistPath, ".gitmodules", canvasFullName); err != nil {
+		return fmt.Errorf("failed to stage changes in new artist: %w", err)
+	}
+
+	// 6. Commit changes in both artists
+	if err = gitutil.Commit(currentArtistPath, fmt.Sprintf("feat: remove canvas %s (moved to %s)", canvasFullName, newArtistFullName)); err != nil {
+		return fmt.Errorf("failed to commit changes in current artist: %w", err)
+	}
+	if err = gitutil.Commit(newArtistPath, fmt.Sprintf("feat: add canvas %s (moved from %s)", canvasFullName, currentArtistName)); err != nil {
+		return fmt.Errorf("failed to commit changes in new artist: %w", err)
+	}
+
+	fmt.Printf("Canvas %s successfully moved from %s to %s!\n", canvasFullName, currentArtistName, newArtistFullName)
+	return nil
+}
+
+// findAtelierRoot finds the atelier root directory by walking up from current directory
+func findAtelierRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".atelier")); err == nil {
+			return dir, nil
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			// Reached root directory
+			break
+		}
+		dir = parent
+	}
+
+	return "", fmt.Errorf("could not find atelier root (.atelier file not found)")
+}
+
+// findCanvasArtist finds which artist contains the specified canvas
+func findCanvasArtist(atelierPath, canvasFullName string) (string, error) {
+	entries, err := os.ReadDir(atelierPath)
+	if err != nil {
+		return "", fmt.Errorf("could not read atelier directory: %w", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasPrefix(entry.Name(), "artist-") {
+			artistPath := filepath.Join(atelierPath, entry.Name())
+			canvasPath := filepath.Join(artistPath, canvasFullName)
+			if _, err := os.Stat(canvasPath); err == nil {
+				return artistPath, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("canvas %s not found in any artist", canvasFullName)
+}
+
+// updateCanvasContext updates the .canvas file with new artist context
+func updateCanvasContext(canvasPath, newArtistFullName string) error {
+	canvasFile := filepath.Join(canvasPath, ".canvas")
+	content, err := os.ReadFile(canvasFile)
+	if err != nil {
+		return fmt.Errorf("could not read .canvas file: %w", err)
+	}
+
+	lines := strings.Split(strings.TrimSpace(string(content)), "\n")
+	if len(lines) < 3 {
+		return fmt.Errorf("invalid .canvas file format")
+	}
+
+	// Update the artist line (second line)
+	lines[1] = newArtistFullName
+	newContent := strings.Join(lines, "\n")
+
+	if err = os.WriteFile(canvasFile, []byte(newContent), 0644); err != nil {
+		return fmt.Errorf("could not write updated .canvas file: %w", err)
+	}
+
+	return nil
+}
+
+// removeFromGitmodules removes a submodule entry from .gitmodules file
+func removeFromGitmodules(repoPath, submodulePath string) error {
+	gitmodulesPath := filepath.Join(repoPath, ".gitmodules")
+
+	// Read the .gitmodules file
+	content, err := os.ReadFile(gitmodulesPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			// No .gitmodules file, nothing to remove
+			return nil
+		}
+		return fmt.Errorf("could not read .gitmodules file: %w", err)
+	}
+
+	lines := strings.Split(string(content), "\n")
+	var newLines []string
+	inSubmoduleBlock := false
+
+	for _, line := range lines {
+		// Check if we're entering a submodule block for our target
+		if strings.HasPrefix(line, "[submodule \"") && strings.Contains(line, submodulePath+"\"]") {
+			inSubmoduleBlock = true
+			continue // Skip this line
+		}
+
+		// If we're in the target submodule block, skip all indented lines
+		if inSubmoduleBlock {
+			if strings.HasPrefix(line, "\t") || strings.HasPrefix(line, " ") {
+				continue // Skip indented lines in the submodule block
+			} else {
+				// We've exited the submodule block
+				inSubmoduleBlock = false
+			}
+		}
+
+		// Keep non-submodule lines
+		if !inSubmoduleBlock {
+			newLines = append(newLines, line)
+		}
+	}
+
+	// Write the updated content back
+	newContent := strings.Join(newLines, "\n")
+	if err = os.WriteFile(gitmodulesPath, []byte(newContent), 0644); err != nil {
+		return fmt.Errorf("could not write updated .gitmodules file: %w", err)
+	}
+
 	return nil
 }
 
