@@ -10,20 +10,6 @@ This is a project canvas - an independent software development project within th
 - Maintains its own dependencies and configurations
 - Is organized thematically within an artist workspace
 
-## 📁 Project Structure
-```
-canvas/
-├── .git/                    # Independent Git repository
-├── README.md               # Human project documentation
-├── AGENTS.md               # AI context (this file)
-├── Makefile                # Build and development tasks
-├── src/                    # Source code
-├── tests/                  # Test files
-├── docs/                   # Documentation
-├── .gitignore              # Git ignore patterns
-└── [project-specific files]
-```
-
 ## 🤖 AI Pair Programming Guidelines
 
 ### Understanding This Canvas
@@ -114,5 +100,19 @@ atelier-cli canvas push
 ## Canvas Requirements
 
 ## Canvas MVP
+
+## 📁 Canvas Structure
+```
+canvas/
+├── .git/                    # Independent Git repository
+├── README.md               # Human project documentation
+├── AGENTS.md               # AI context (this file)
+├── Makefile                # Build and development tasks
+├── src/                    # Source code
+├── tests/                  # Test files
+├── docs/                   # Documentation
+├── .gitignore              # Git ignore patterns
+└── [project-specific files]
+```
 
 - and add more below as you paint this new amaxing canvas!

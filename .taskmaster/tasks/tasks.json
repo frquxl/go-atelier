@@ -1,0 +1,193 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 11,
+        "title": "Add clone subcommand to artist command",
+        "description": "Extend the existing artist command in Cobra CLI to include a new 'clone' subcommand.",
+        "details": "Use Cobra to add a new command: var cloneCmd = &cobra.Command{Use: \"clone [source] [name]\", Short: \"Clone an artist from source\", Run: func(cmd *cobra.Command, args []string){ /* parse args, call cloneArtist function */ }}. Add to artistCmd.AddCommand(cloneCmd). Implement basic argument parsing for source and name using cobra flags or args. Ensure it integrates without breaking existing subcommands like init, delete, push.",
+        "testStrategy": "Unit test the command parsing with cobra's testing utilities. Verify that cloneCmd is added to artistCmd and that Run function is called with correct args. Integration test by running the full CLI command and checking output/errors.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Define the clone command structure using Cobra",
+            "description": "Create the basic Cobra command definition for the 'clone' subcommand under the artist command, including the Use and Short fields as specified.",
+            "dependencies": [],
+            "details": "In the relevant Go file (e.g., artist.go), declare a variable cloneCmd as &cobra.Command with Use: \"clone [source] [name]\", Short: \"Clone an artist from source\". Leave the Run field as a placeholder function for now. Import cobra if not already present.",
+            "status": "pending",
+            "testStrategy": "Use Cobra's testing utilities to verify the command definition parses correctly with example usage."
+          },
+          {
+            "id": 2,
+            "title": "Implement argument parsing in the Run function",
+            "description": "Add the Run function to the cloneCmd that parses the source and name arguments from the command line args.",
+            "dependencies": [
+              "11.1"
+            ],
+            "details": "Update the Run field of cloneCmd to a function that checks if len(args) >= 2, sets source = args[0], name = args[1]. For now, just log or print the parsed values and call a placeholder cloneArtist(source, name) function. Handle errors if insufficient args are provided using cmd.Help() or usage errors.",
+            "status": "pending",
+            "testStrategy": "Write a unit test using cobra's CommandTestSuite or manual execution to ensure args are parsed correctly and errors are handled for missing arguments."
+          },
+          {
+            "id": 3,
+            "title": "Integrate the cloneCmd into the artist command",
+            "description": "Add the newly defined cloneCmd to the existing artistCmd to make it available as a subcommand.",
+            "dependencies": [
+              "11.2"
+            ],
+            "details": "In the code where artistCmd is initialized, call artistCmd.AddCommand(cloneCmd). Ensure this is done before the root command setup. Verify the command tree structure using Cobra's debug flags if needed during development.",
+            "status": "pending",
+            "testStrategy": "Test that the full command 'artist clone' is recognized by running cobra's Execute with mock args and checking for no unknown command errors."
+          },
+          {
+            "id": 4,
+            "title": "Verify integration and ensure no breaking changes to existing subcommands",
+            "description": "Test the addition of the clone subcommand to confirm it doesn't interfere with existing artist subcommands like init, delete, and push.",
+            "dependencies": [
+              "11.3"
+            ],
+            "details": "Run the full CLI binary or use Go tests to execute existing subcommands (e.g., 'artist init', 'artist delete') and verify they work as before. Add the clone command to the help output. If issues arise, check command registration order and flag conflicts.",
+            "status": "pending",
+            "testStrategy": "Integration tests: Execute existing subcommands via os/exec or cobra testing and assert successful completion without errors. Also test 'artist help' to ensure clone is listed."
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "title": "Add clone subcommand to canvas command",
+        "description": "Extend the existing canvas command in Cobra CLI to include a new 'clone' subcommand.",
+        "details": "Similar to task 11, add var cloneCmd = &cobra.Command{Use: \"clone [source] [name]\", Short: \"Clone a canvas from source\", Run: func(cmd *cobra.Command, args []string){ /* parse args, call cloneCanvas function */ }}. Add to canvasCmd.AddCommand(cloneCmd). Ensure compatibility with existing subcommands.",
+        "testStrategy": "Unit tests for command addition and parsing. Integration tests for CLI execution without affecting other commands.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement public GitHub repo cloning for artist",
+        "description": "Implement the logic to clone an artist from a public GitHub repository using Git.",
+        "details": "In the cloneArtist function, check if source is a GitHub URL (https://github.com/user/repo). Use os/exec to run 'git clone source target_dir' where target_dir is based on name. Handle the atelier/artist hierarchical structure by cloning into appropriate dirs. Preserve Git history. Use Go's filepath and os packages for directory management. Follow Go best practices for error handling with errors package.",
+        "testStrategy": "Mock git commands using testify/mock or similar. Test with temporary directories to verify clone succeeds and structure is maintained. Check for correct Git history with git log in tests.",
+        "priority": "high",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement public GitHub repo cloning for canvas",
+        "description": "Implement the logic to clone a canvas from a public GitHub repository using Git.",
+        "details": "Similar to task 13, in cloneCanvas function, parse GitHub URL and execute 'git clone' into canvas directory structure. Ensure hierarchical preservation. Reuse any shared Git cloning utility if possible, but keep separate for now.",
+        "testStrategy": "Similar to task 13: mock Git, temp dir tests, verify structure and history.",
+        "priority": "high",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Handle automatic Git submodule setup for cloned components",
+        "description": "After cloning, automatically initialize and update Git submodules for the cloned artists and canvases.",
+        "details": "After successful git clone in tasks 13/14, run 'git submodule init' and 'git submodule update --recursive' in the target directory using os/exec. Apply to both artist and canvas cloning functions. Handle errors if submodules fail to update.",
+        "testStrategy": "Create test repos with submodules. Verify that after clone, submodules are present and updated by checking git status and ls in submodule dirs.",
+        "priority": "medium",
+        "dependencies": [
+          13,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Implement local path cloning for artist",
+        "description": "Add support for cloning artists from local file paths.",
+        "details": "In cloneArtist, if source is a local path (starts with ./ or /), use 'git clone' if it's a git repo, or copy files with filepath.Walk and io.Copy if not. Preserve metadata and config files by copying .atelier files etc. Validate path existence.",
+        "testStrategy": "Use temp dirs to create local repo, test clone by verifying files are copied/cloned correctly, metadata preserved via file content checks.",
+        "priority": "medium",
+        "dependencies": [
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Implement local path cloning for canvas",
+        "description": "Add support for cloning canvases from local file paths.",
+        "details": "Analogous to task 16 for canvas. Check if local path, clone or copy accordingly, maintain structure.",
+        "testStrategy": "Similar to task 16, temp dir tests for file integrity and structure.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Add authentication handling for private repositories",
+        "description": "Implement secure authentication for cloning private GitHub repos using SSH or HTTPS with tokens.",
+        "details": "For HTTPS: prompt for or read from env GitHub token, set git config credential.helper or use in clone command. For SSH: assume keys are set up, use ssh URL. Add flags to clone command for --token or --ssh. Use secure input with golang.org/x/term for passwords. Follow OAuth best practices, store tokens securely if needed (e.g., keyring). Integrate into clone functions for both artist and canvas.",
+        "testStrategy": "Mock private repo scenarios, test with fake auth. Verify auth succeeds without exposing credentials in logs. Integration with real private repo if possible in CI.",
+        "priority": "high",
+        "dependencies": [
+          13,
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Ensure preservation of metadata and configuration during cloning",
+        "description": "Verify that all atelier-specific metadata and config files are preserved in the cloning process.",
+        "details": "During clone/copy, explicitly copy or ensure .atelier, config.yaml, etc., files are included. For git clone, they should be part of repo. Add post-clone checks to validate presence and permissions. Update any paths if needed in configs.",
+        "testStrategy": "Test by cloning and checking file existence, content equality with originals using diff or checksums. Ensure configs are parsable after clone.",
+        "priority": "medium",
+        "dependencies": [
+          13,
+          14,
+          16,
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Integration testing and ensure no breaking changes",
+        "description": "Conduct comprehensive testing to ensure clone feature integrates without breaking existing commands.",
+        "details": "Write end-to-end tests for all clone scenarios. Run full test suite for existing init/delete/push. Use Go's testing package and perhaps testify for assertions. Test on multiple OS if applicable. Document any integration points.",
+        "testStrategy": "Automated tests covering public/private/local clones, submodule handling. Regression tests for existing commands. Manual verification of CLI usage.",
+        "priority": "medium",
+        "dependencies": [
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-09-07T05:18:06.051Z",
+      "updated": "2025-09-07T05:34:56.662Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

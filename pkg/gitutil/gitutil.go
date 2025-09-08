@@ -86,3 +86,18 @@ func IsPathDirty(dir, path string) (bool, error) {
 	}
 	return strings.TrimSpace(out) != "", nil
 }
+
+// HasUnpushedCommits checks if the repository has commits that haven't been pushed to the remote.
+func HasUnpushedCommits(dir string) (bool, error) {
+	out, err := RunGitCommandOutput(dir, "log", "--oneline", "origin..HEAD")
+	if err != nil {
+		// If there's no remote or no origin branch, consider it as no unpushed commits
+		if strings.Contains(err.Error(), "does not have a commit") ||
+			strings.Contains(err.Error(), "unknown revision") ||
+			strings.Contains(err.Error(), "No remote configured") {
+			return false, nil
+		}
+		return false, err
+	}
+	return strings.TrimSpace(out) != "", nil
+}

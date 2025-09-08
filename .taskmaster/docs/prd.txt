@@ -1,0 +1,78 @@
+# Product Requirements Document (PRD): Clone Feature for Atelier CLI
+
+## Project Overview
+Add cloning functionality to the Atelier CLI tool to allow users to clone artists or canvases from other ateliers. This feature will support cloning from GitHub repositories (public and private), as well as local repositories, enabling easy reuse and sharing of project components across different ateliers.
+
+## Objectives
+- Enable users to clone artists and canvases from remote GitHub repositories
+- Support both public and private repository cloning with proper authentication
+- Allow cloning from local atelier repositories for internal reuse
+- Maintain the existing atelier/artist/canvas hierarchical structure during cloning
+- Ensure proper Git submodule handling for cloned components
+
+## Target Audience
+- Developers using Atelier CLI for project management
+- Teams collaborating on multiple related projects
+- Users who want to reuse existing artists/canvases across different ateliers
+
+## Current Implementation Status
+- ✅ Artist command exists (`atelier artist`) with subcommands: init, delete, push
+- ✅ Canvas command exists (`atelier canvas`) with subcommands: init, delete, push
+- ✅ Cobra CLI framework is already implemented
+- ✅ Basic Git integration exists for submodules
+
+## Features
+### Core Features
+- `atelier artist clone <source> <name>` - **ADD** clone subcommand to existing artist command
+- `atelier canvas clone <source> <name>` - **ADD** clone subcommand to existing canvas command
+- Support for GitHub URLs (https/ssh)
+- Support for local file paths
+- Automatic Git submodule setup for cloned components
+- Authentication handling for private repositories
+
+### Nice-to-Have Features
+- Interactive repository browser for GitHub
+- Clone history tracking
+- Conflict resolution for existing names
+- Batch cloning of multiple components
+
+## User Stories
+- As a developer, I want to clone a useful artist from a public GitHub repo so I can reuse proven patterns in my project
+- As a team member, I want to clone a canvas from a private company repo so I can incorporate shared components
+- As a user, I want to clone an artist from another local atelier so I can port successful implementations between projects
+- As a developer, I want the cloned component to maintain its Git history and submodule relationships
+
+## Technical Requirements
+- Go programming language
+- Git command integration (already partially implemented)
+- **EXTEND existing Cobra CLI framework** (artist/canvas commands already exist)
+- GitHub API for repository validation (optional)
+- SSH key authentication support
+- HTTPS authentication with personal access tokens
+
+## Constraints
+- **Must integrate with existing Atelier CLI architecture** (extend current commands)
+- Should not break current Git submodule workflow
+- Authentication must be secure and follow best practices
+- Cloning should preserve all metadata and configuration files
+- **Must not break existing artist/canvas subcommands** (init, delete, push)
+
+## Success Metrics
+- Successfully clone artists/canvases from public GitHub repos
+- Successfully clone from private repos with proper auth
+- Successfully clone from local paths
+- All cloned components maintain functionality
+- **No breaking changes to existing CLI commands** (init, delete, push still work)
+- Clone commands integrate seamlessly with existing artist/canvas commands
+
+## Timeline
+- Phase 1: Add clone subcommands to existing artist/canvas commands
+- Phase 2: Basic GitHub public repo cloning
+- Phase 3: Private repo and local path support
+- Phase 4: Advanced features and testing
+
+## Risks
+- Authentication complexity for private repos
+- Git submodule conflicts during cloning
+- Repository structure variations
+- **Integration issues with existing codebase** (ensuring clone works alongside init/delete/push)

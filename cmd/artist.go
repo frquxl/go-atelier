@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/frquxl/go-atelier/pkg/engine"
+	"github.com/frquxl/go-atelier/pkg/gitutil"
 	"github.com/frquxl/go-atelier/pkg/util"
 	"github.com/spf13/cobra"
 )
@@ -62,17 +63,54 @@ var artistDeleteCmd = &cobra.Command{
 
 		artistFullName := args[0]
 
-		// Confirmation prompt
+		// Get current working directory (atelier path)
+		atelierPath, err := os.Getwd()
+		if err != nil {
+			return fmt.Errorf("could not get current working directory: %w", err)
+		}
+
+		artistPath := filepath.Join(atelierPath, artistFullName)
+
+		// Check for uncommitted changes in the artist
+		hasUncommitted, err := gitutil.IsPathDirty(atelierPath, artistFullName)
+		if err != nil {
+			return fmt.Errorf("failed to check for uncommitted changes: %w", err)
+		}
+
+		// Check for unpushed changes in the artist
+		hasUnpushed, err := gitutil.HasUnpushedCommits(artistPath)
+		if err != nil {
+			return fmt.Errorf("failed to check for unpushed changes: %w", err)
+		}
+
+		// First confirmation prompt
 		confirmMessage := fmt.Sprintf("Are you sure you want to delete artist '%s'? This will delete the artist's directory and all its contents, and remove it from Git tracking.", artistFullName)
 		if !util.Confirm(confirmMessage) {
 			fmt.Println("Artist deletion cancelled.")
 			return nil
 		}
 
-		// Get current working directory (atelier path)
-		atelierPath, err := os.Getwd()
-		if err != nil {
-			return fmt.Errorf("could not get current working directory: %w", err)
+		// If there are uncommitted or unpushed changes, warn and require second confirmation
+		if hasUncommitted || hasUnpushed {
+			warningMsg := "WARNING: This artist has "
+			warnings := []string{}
+			if hasUncommitted {
+				warnings = append(warnings, "uncommitted changes")
+			}
+			if hasUnpushed {
+				warnings = append(warnings, "unpushed commits")
+			}
+			warningMsg += strings.Join(warnings, " and ")
+			warningMsg += ". Deleting will permanently lose these changes."
+
+			fmt.Println(warningMsg)
+
+			// Second confirmation
+			confirmMessage2 := fmt.Sprintf("Are you absolutely sure you want to delete artist '%s' despite the %s?", artistFullName, strings.Join(warnings, " and "))
+			if !util.Confirm(confirmMessage2) {
+				fmt.Println("Artist deletion cancelled.")
+				return nil
+			}
 		}
 
 		if err = engine.DeleteArtist(atelierPath, artistFullName); err != nil {
