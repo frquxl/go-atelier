@@ -78,6 +78,12 @@ web-start:
 	@echo "Starting web app in production mode..."
 	cd $(WEB_APP_DIR) && npm run start
 
+# build vincent cli
+build-vincent:
+	cd plugins/vincent-cli
+	go build -o ../../pkg/templates/assets/canvas-sunflowers/vincent .
+
+
 # Show help
 help:
 	@echo "Available targets:"

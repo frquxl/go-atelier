@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/frquxl/go-atelier/pkg/fs"
+	localfs "github.com/frquxl/go-atelier/pkg/fs"
 	"github.com/frquxl/go-atelier/pkg/gitutil"
 	"github.com/frquxl/go-atelier/pkg/templates"
 )
@@ -24,14 +24,14 @@ func CreateAtelier(basePath, atelierBaseName string) (atelierPath string, err er
 	}()
 
 	fmt.Println("Initializing atelier...")
-	if err = fs.CreateDir(atelierPath); err != nil {
+	if err = localfs.CreateDir(atelierPath); err != nil {
 		return "", err
 	}
 	if err = gitutil.Init(atelierPath); err != nil {
 		return "", err
 	}
 	// Write marker file
-	if err = fs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(atelierDirName)); err != nil {
+	if err = localfs.WriteFile(filepath.Join(atelierPath, ".atelier"), []byte(atelierDirName)); err != nil {
 		return "", err
 	}
 	// Create boilerplate files
@@ -70,7 +70,7 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	}()
 
 	fmt.Println("Initializing artist...")
-	if err = fs.CreateDir(artistPath); err != nil {
+	if err = localfs.CreateDir(artistPath); err != nil {
 		return err
 	}
 	if err = gitutil.Init(artistPath); err != nil {
@@ -78,7 +78,7 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 	}
 	// Write marker file
 	artistContext := fmt.Sprintf("%s\n%s", atelierDirName, artistDirName)
-	if err = fs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
+	if err = localfs.WriteFile(filepath.Join(artistPath, ".artist"), []byte(artistContext)); err != nil {
 		return err
 	}
 
@@ -154,7 +154,7 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	}()
 
 	fmt.Println("Initializing canvas...")
-	if err = fs.CreateDir(canvasPath); err != nil {
+	if err = localfs.CreateDir(canvasPath); err != nil {
 		return err
 	}
 	if err = gitutil.Init(canvasPath); err != nil {
@@ -162,22 +162,36 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 	}
 	// Write marker file
 	canvasContext := fmt.Sprintf("%s\n%s\n%s", atelierName, artistDirName, canvasDirName)
-	if err = fs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
+	if err = localfs.WriteFile(filepath.Join(canvasPath, ".canvas"), []byte(canvasContext)); err != nil {
 		return err
 	}
 	// Create boilerplate files
 	if err = templates.CreateBoilerplate(canvasPath, "canvas"); err != nil {
 		return err
 	}
-	// Stage changes (marker + boilerplate)
-	if err = gitutil.AddPaths(canvasPath, existingPaths(canvasPath, []string{
+
+	// --- Special handling for 'sunflowers' canvas ---
+	if canvasName == "sunflowers" {
+		fmt.Println("Configuring 'sunflowers' canvas with Van Gogh CLI...")
+		if err = copySunflowersAssets(canvasPath); err != nil {
+			return fmt.Errorf("failed to copy 'sunflowers' assets: %w", err)
+		}
+	}
+
+	// Stage changes (marker + boilerplate + special assets)
+	pathsToCommit := []string{
 		".canvas",
 		"README.md",
 		"AGENTS.md",
 		"Makefile",
 		".gitignore",
 		".geminiignore",
-	})...); err != nil {
+	}
+	if canvasName == "sunflowers" {
+		pathsToCommit = append(pathsToCommit, "vincent")
+	}
+
+	if err = gitutil.AddPaths(canvasPath, existingPaths(canvasPath, pathsToCommit)...); err != nil {
 		return err
 	}
 	if err = gitutil.Commit(canvasPath, fmt.Sprintf("feat: initialize canvas %s", canvasName)); err != nil {
@@ -197,6 +211,30 @@ func CreateCanvas(artistPath string, canvasName string) (err error) {
 		return err
 	}
 
+	return nil
+}
+
+// copySunflowersAssets copies the specific assets for the sunflowers canvas.
+func copySunflowersAssets(destPath string) error {
+	// Define the files to copy from the embedded assets
+	filesToCopy := map[string]os.FileMode{
+		"assets/canvas-sunflowers/README.md": 0644,
+		"assets/canvas-sunflowers/vincent":   0755, // Executable
+	}
+
+	for src, perm := range filesToCopy {
+		content, err := templates.TemplatesFS.ReadFile(src)
+		if err != nil {
+			return fmt.Errorf("failed to read embedded asset %s: %w", src, err)
+		}
+
+		dest := filepath.Join(destPath, filepath.Base(src))
+
+		// Overwrite the default README with the themed one, and write the binary.
+		if err := os.WriteFile(dest, content, perm); err != nil {
+			return fmt.Errorf("failed to write asset %s: %w", dest, err)
+		}
+	}
 	return nil
 }
 
