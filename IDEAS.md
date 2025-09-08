@@ -31,6 +31,7 @@ COPY in readme snippets and AGENTS workflow snippets?
 
 16. on init check for gh cli in ssh, task-master cli if decided to use and other requirements
 
-17. need to sop ai from ever querying klocal env variables as it reveals secrets in chat e.g cd artist-golang/canvas-salesIQ-api-wrapper && env | grep ZOHO
+17. need to stop ai from ever querying klocal env variables as it reveals secrets in chat e.g cd artist-golang/canvas-salesIQ-api-wrapper && env | grep ZOHO
 
-18. Gpt 5 MADE A CLI FORST GO APP AS A API simulator to get fucntions going then to later expose, seems something artist-golang could bootstrap?
+18. CLI first is a great parttern for rapid prototyping go, maybe the arist-golang can pre set this up with cobra, and then the makefile can stay as more generic build and tests, and cli driven commands for the bus logic
+

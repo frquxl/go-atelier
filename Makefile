@@ -47,6 +47,9 @@ install:
 	@echo "Building $(BINARY_NAME) with version $(VERSION) and installing globally"
 	go build $(LDFLAGS) -o $(BINARY_NAME) .
 	cp $(BINARY_NAME) $(shell go env GOPATH)/bin/
+	@echo "Copying push-engine scripts to $(shell go env GOPATH)/bin/"
+	mkdir -p $(shell go env GOPATH)/bin/pkg
+	cp -r pkg/push-engine $(shell go env GOPATH)/bin/pkg/
 
 # Build and test
 all: fmt vet test build
