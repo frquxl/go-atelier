@@ -105,6 +105,10 @@ var artistDeleteCmd = &cobra.Command{
 
 			fmt.Println(warningMsg)
 
+			// Show detailed breakdown of canvas statuses
+			fmt.Println("\nCanvas status breakdown:")
+			showCanvasStatuses(atelierPath, artistFullName)
+
 			// Second confirmation
 			confirmMessage2 := fmt.Sprintf("Are you absolutely sure you want to delete artist '%s' despite the %s?", artistFullName, strings.Join(warnings, " and "))
 			if !util.Confirm(confirmMessage2) {
@@ -185,6 +189,59 @@ func listAvailableAteliers() {
 		fmt.Println("  Create one with: atelier init <name>")
 	} else {
 		fmt.Println("\nTo work with an atelier, run: cd <atelier-directory>")
+	}
+}
+
+func showCanvasStatuses(atelierPath, artistFullName string) {
+	artistPath := filepath.Join(atelierPath, artistFullName)
+
+	entries, err := os.ReadDir(artistPath)
+	if err != nil {
+		fmt.Printf("  Error reading artist directory: %v\n", err)
+		return
+	}
+
+	hasCanvases := false
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasPrefix(entry.Name(), "canvas-") {
+			hasCanvases = true
+			canvasName := entry.Name()
+			canvasPath := filepath.Join(artistPath, canvasName)
+
+			// Check for uncommitted changes
+			hasUncommitted, err := gitutil.IsPathDirty(artistPath, canvasName)
+			if err != nil {
+				fmt.Printf("  %s: error checking status - %v\n", canvasName, err)
+				continue
+			}
+
+			// Check for unpushed changes
+			hasUnpushed, err := gitutil.HasUnpushedCommits(canvasPath)
+			if err != nil {
+				fmt.Printf("  %s: error checking status - %v\n", canvasName, err)
+				continue
+			}
+
+			// Build status message
+			statusParts := []string{}
+			if hasUncommitted {
+				statusParts = append(statusParts, "uncommitted changes")
+			}
+			if hasUnpushed {
+				statusParts = append(statusParts, "unpushed commits")
+			}
+
+			if len(statusParts) > 0 {
+				statusMsg := strings.Join(statusParts, " and ")
+				fmt.Printf("  %s: %s\n", canvasName, statusMsg)
+			} else {
+				fmt.Printf("  %s: clean\n", canvasName)
+			}
+		}
+	}
+
+	if !hasCanvases {
+		fmt.Println("  No canvases found in this artist.")
 	}
 }
 
