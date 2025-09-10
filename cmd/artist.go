@@ -32,7 +32,12 @@ var artistInitCmd = &cobra.Command{
 		}
 
 		artistName := args[0]
-		canvasName := "example" // Artists are created with a default example canvas
+		var canvasName string
+		if withCanvas, _ := cmd.Flags().GetBool("with-canvas"); withCanvas {
+			canvasName = "example" // Artists are created with a default example canvas when flag is set
+		} else {
+			canvasName = "" // No canvas created by default
+		}
 
 		// Get current working directory to construct absolute paths
 		atelierPath, err := os.Getwd()
@@ -249,6 +254,7 @@ func init() {
 	artistPushCmd.Flags().Bool("dry-run", false, "Show what would be pushed without pushing")
 	artistPushCmd.Flags().Bool("quiet", false, "Suppress verbose output")
 	artistPushCmd.Flags().Bool("force", false, "Force push (use with caution)")
+	artistInitCmd.Flags().Bool("with-canvas", false, "Create a default example canvas with the artist")
 	RootCmd.AddCommand(artistCmd)
 	artistCmd.AddCommand(artistInitCmd)
 	artistCmd.AddCommand(artistDeleteCmd)

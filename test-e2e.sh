@@ -139,7 +139,6 @@ assert_file_exists "$EXPECTED_ARTIST/AGENTS.md"
 assert_file_exists "$EXPECTED_ARTIST/Makefile"
 assert_file_exists "$EXPECTED_ARTIST/.gitignore"
 assert_file_exists "$EXPECTED_ARTIST/.geminiignore"
-assert_file_exists "$EXPECTED_ARTIST/.gitmodules"
 assert_git_repo "$EXPECTED_ARTIST"
 
 # Check artist content

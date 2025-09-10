@@ -111,9 +111,11 @@ func CreateArtist(atelierPath, artistName, canvasName string) (err error) {
 		return err
 	}
 
-	// 2. Create and initialize default Canvas for the artist
-	if err = CreateCanvas(artistPath, canvasName); err != nil {
-		return err
+	// 2. Create and initialize default Canvas for the artist (if specified)
+	if canvasName != "" {
+		if err = CreateCanvas(artistPath, canvasName); err != nil {
+			return err
+		}
 	}
 
 	// 3. Link artist to atelier

@@ -1,8 +1,6 @@
 # Little log of ideas to capture while they come up
 
-2. Add a cool app in vangogh suinflowers canvas just for the fun of it 
-
-3. Add another cool app in canvas -example that somehoe changes each time it is generated otherwise they will all be the same in each artists added! 
+3. Add another cool app in canvas -example that somehoe changes each time it is generated otherwise they will all be the same in each artist added! 
 
 4. "fork" an atelier, artist or canvas, a cli command to make a new one based on another
 
@@ -34,4 +32,6 @@ COPY in readme snippets and AGENTS workflow snippets?
 17. need to stop ai from ever querying klocal env variables as it reveals secrets in chat e.g cd artist-golang/canvas-salesIQ-api-wrapper && env | grep ZOHO
 
 18. CLI first is a great parttern for rapid prototyping go, maybe the arist-golang can pre set this up with cobra, and then the makefile can stay as more generic build and tests, and cli driven commands for the bus logic
+
+19. delete artist or canvas sometimes needs sudo for the rm -rf
 
