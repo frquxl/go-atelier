@@ -139,6 +139,24 @@ var canvasMoveCmd = &cobra.Command{
 	},
 }
 
+var canvasCloneCmd = &cobra.Command{
+	Use:   "clone <canvas-full-name> <target-artist-full-name>",
+	Short: "Clone a canvas to another artist.",
+	Long:  `Clones a canvas from its current artist to another artist, creating a copy with proper Git submodule relationships.`,
+	Args:  cobra.ExactArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) (err error) {
+		canvasFullName := args[0]
+		targetArtistFullName := args[1]
+
+		if err := engine.CloneCanvas(canvasFullName, targetArtistFullName); err != nil {
+			return err
+		}
+
+		fmt.Printf("Canvas '%s' cloned to artist '%s' successfully!\n", canvasFullName, targetArtistFullName)
+		return nil
+	},
+}
+
 var canvasPushCmd = &cobra.Command{
 	Use:   "push",
 	Short: "Push changes using the git push engine",
@@ -214,4 +232,5 @@ func init() {
 	canvasCmd.AddCommand(canvasDeleteCmd)
 	canvasCmd.AddCommand(canvasPushCmd)
 	canvasCmd.AddCommand(canvasMoveCmd)
+	canvasCmd.AddCommand(canvasCloneCmd)
 }

@@ -105,4 +105,63 @@ func TestCanvasCommand(t *testing.T) {
 			t.Fatalf(".gitmodules still contains reference to deleted canvas %s", canvasToDeleteName)
 		}
 	})
+
+	// Test Case 3: Clone a canvas to another artist
+	t.Run("clone_canvas", func(t *testing.T) {
+		tmpDir := t.TempDir()
+
+		// Setup: Create an atelier with two artists and a canvas
+		initCmd := exec.Command(cliPath, "init", "test-clone-atelier")
+		initCmd.Dir = tmpDir
+		if output, err := initCmd.CombinedOutput(); err != nil {
+			t.Fatalf("Prerequisite `init` command failed: %v\nOutput:\n%s", err, string(output))
+		}
+
+		atelierPath := filepath.Join(tmpDir, "atelier-test-clone-atelier")
+		sourceArtistPath := filepath.Join(atelierPath, "artist-van-gogh") // Default artist
+		canvasName := "sunflowers"
+
+		// Create a second artist to clone to
+		targetArtistName := "picasso"
+		artistCmd := exec.Command(cliPath, "artist", "init", targetArtistName)
+		artistCmd.Dir = atelierPath
+		if output, err := artistCmd.CombinedOutput(); err != nil {
+			t.Fatalf("Prerequisite `artist init` command failed: %v\nOutput:\n%s", err, string(output))
+		}
+		targetArtistPath := filepath.Join(atelierPath, "artist-"+targetArtistName)
+
+		// Execute the canvas clone command from the atelier root
+		cloneCmd := exec.Command(cliPath, "canvas", "clone", "canvas-"+canvasName, "artist-"+targetArtistName)
+		cloneCmd.Dir = atelierPath
+
+		if output, err := cloneCmd.CombinedOutput(); err != nil {
+			t.Fatalf("Command `canvas clone` failed: %v\nOutput:\n%s", err, string(output))
+		}
+
+		// Define expected paths
+		clonedCanvasPath := filepath.Join(targetArtistPath, "canvas-"+canvasName)
+
+		// Assertions for cloned canvas
+		assertDirExists(t, clonedCanvasPath)
+		assertGitRepo(t, clonedCanvasPath)
+		assertFileExists(t, filepath.Join(clonedCanvasPath, ".canvas"))
+
+		// Verify the .canvas file has been updated with the new artist context
+		canvasFileContent, err := os.ReadFile(filepath.Join(clonedCanvasPath, ".canvas"))
+		if err != nil {
+			t.Fatalf("Failed to read .canvas file: %v", err)
+		}
+		contentStr := string(canvasFileContent)
+		if !strings.Contains(contentStr, targetArtistName) {
+			t.Fatalf(".canvas file does not contain expected artist name %s. Content: %s", targetArtistName, contentStr)
+		}
+
+		// Assert that the cloned canvas was added as a submodule to the target artist
+		assertSubmodule(t, targetArtistPath, "canvas-"+canvasName)
+
+		// Verify the original canvas still exists in the source artist
+		originalCanvasPath := filepath.Join(sourceArtistPath, "canvas-"+canvasName)
+		assertDirExists(t, originalCanvasPath)
+		assertSubmodule(t, sourceArtistPath, "canvas-"+canvasName)
+	})
 }

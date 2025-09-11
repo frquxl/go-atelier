@@ -1,7 +1,5 @@
 # Little log of ideas to capture while they come up
 
-3. Add another cool app in canvas -example that somehoe changes each time it is generated otherwise they will all be the same in each artist added! 
-
 4. "fork" an atelier, artist or canvas, a cli command to make a new one based on another
 
 5. look at wiki-go it might be the ideal md front end

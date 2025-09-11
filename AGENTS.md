@@ -8,6 +8,7 @@
 - **3-Level Git Submodule Architecture**: Atelier → Artists (submodules) → Canvases (submodules) for clean version control separation.
 - **Nested Repository Management**: Each canvas is an independent Git repository while maintaining atelier structure.
 - **Canvas Movement**: Move canvases between artists with automatic Git submodule relationship updates.
+- **Canvas Cloning**: Clone canvases to different artists while preserving Git history and relationships.
 - **Automatic Submodule Setup**: CLI handles complex Git submodule relationships automatically.
 - **Embedded Template System**: Generates README.md, AGENTS.md, Makefile, .gitignore, and .geminiignore files from templates embedded in the binary.
 
@@ -81,6 +82,20 @@
   - Adds canvas as submodule to the new artist with proper Git tracking.
   - Updates the canvas's `.canvas` file with new artist context information.
   - Creates appropriate commit messages in both source and destination artists.
+  - Provides comprehensive error handling with cleanup on failure.
+
+### canvas clone
+- **Purpose**: Clones a canvas to another artist, creating a copy with proper Git submodule relationships.
+- **Usage**: `atelier-cli canvas clone <canvas-full-name> <target-artist-full-name>`
+- **Functionality**:
+  - Can be run from any directory within an atelier (automatically finds the atelier root).
+  - Automatically discovers which artist currently contains the source canvas.
+  - Validates that the target artist exists and prevents naming conflicts.
+  - Copies the entire canvas directory to the target artist (preserving all files and Git history).
+  - Updates the cloned canvas's `.canvas` file with new artist context information.
+  - Adds the cloned canvas as submodule to the target artist with proper Git tracking.
+  - Creates appropriate commit messages in the target artist.
+  - Leaves the original canvas unchanged in its source artist.
   - Provides comprehensive error handling with cleanup on failure.
 
 ### atelier push

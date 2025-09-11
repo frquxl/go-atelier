@@ -7,6 +7,7 @@ A metaphor-driven CLI tool for software project management using the atelier/art
 - **Metaphor-Driven Interface**: Uses atelier/artist/canvas metaphors for intuitive project organization.
 - **3-Level Git Submodule Architecture**: Automatically scaffolds a nested Git repository structure (`atelier` -> `artist` -> `canvas`) for clean version control separation.
 - **Canvas Movement**: Move canvases between artists with automatic Git submodule relationship updates and context preservation.
+- **Canvas Cloning**: Clone canvases to different artists while preserving Git history and relationships.
 - **Context-Aware Commands**: Ensures commands like `artist init` and `canvas init` are run in the correct directory context.
 - **Hierarchical Git Push Engine**: Provides `push` commands that recursively commit and push changes across the entire atelier/artist/canvas hierarchy with proper submodule handling.
 - **Boilerplate Generation**: Creates useful starter files (`README.md`, `AGENTS.md`, `Makefile`, `.gitignore`) from an embedded template system.
@@ -101,6 +102,21 @@ atelier-cli canvas move canvas-sunflowers artist-picasso
 # - Move it to 'artist-picasso'
 # - Update all Git submodule relationships
 # - Update the canvas's context information
+```
+
+### Clone a Canvas
+
+```bash
+# Clone a canvas to another artist (can be run from any directory within the atelier)
+cd atelier-my-project  # or any subdirectory
+atelier-cli canvas clone canvas-sunflowers artist-picasso
+
+# The command will:
+# - Automatically find which artist currently contains 'canvas-sunflowers'
+# - Create a copy in 'artist-picasso'
+# - Preserve all files and Git history
+# - Update the cloned canvas's context information
+# - Leave the original canvas unchanged
 ```
 
 ### Push Changes
