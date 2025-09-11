@@ -9,6 +9,7 @@ import (
 	"github.com/frquxl/go-atelier/pkg/fs"
 	"github.com/frquxl/go-atelier/pkg/gitutil"
 	"github.com/frquxl/go-atelier/pkg/templates"
+	"github.com/frquxl/go-atelier/pkg/util"
 )
 
 // CreateAtelier initializes the main atelier directory and repository.
@@ -355,7 +356,7 @@ func MoveCanvas(canvasFullName, newArtistFullName string) error {
 	}
 
 	// 3. Update the .canvas file with new artist context
-	if err = updateCanvasContext(newCanvasPath, newArtistFullName); err != nil {
+	if err = updateCanvasContext(newCanvasPath, newArtistFullName, ""); err != nil {
 		return fmt.Errorf("failed to update canvas context: %w", err)
 	}
 
@@ -385,7 +386,7 @@ func MoveCanvas(canvasFullName, newArtistFullName string) error {
 }
 
 // CloneCanvas clones a canvas from one artist to another.
-func CloneCanvas(canvasFullName, targetArtistFullName string) error {
+func CloneCanvas(canvasFullName, targetArtistFullName, newCanvasName string) error {
 	// Find the atelier root by walking up from current directory
 	atelierPath, err := findAtelierRoot()
 	if err != nil {
@@ -404,16 +405,41 @@ func CloneCanvas(canvasFullName, targetArtistFullName string) error {
 		return fmt.Errorf("target artist %s does not exist", targetArtistFullName)
 	}
 
-	// Check if target artist already has a canvas with this name
-	targetCanvasPath := filepath.Join(targetArtistPath, canvasFullName)
+	// Determine the final canvas name to use
+	finalCanvasName := canvasFullName
+	if newCanvasName != "" {
+		finalCanvasName = "canvas-" + newCanvasName
+	}
+
+	// Check if target artist already has a canvas with the final name
+	targetCanvasPath := filepath.Join(targetArtistPath, finalCanvasName)
 	if _, err := os.Stat(targetCanvasPath); err == nil {
-		return fmt.Errorf("canvas %s already exists in artist %s", canvasFullName, targetArtistFullName)
+		if newCanvasName != "" {
+			return fmt.Errorf("canvas %s already exists in artist %s", finalCanvasName, targetArtistFullName)
+		}
+		// If no new name was provided and there's a conflict, prompt for a new name
+		fmt.Printf("Canvas '%s' already exists in artist '%s'.\n", canvasFullName, targetArtistFullName)
+		newNameInput := util.Prompt("Enter a new name for the cloned canvas")
+		if newNameInput == "" {
+			return fmt.Errorf("no name provided for cloned canvas")
+		}
+		finalCanvasName = "canvas-" + newNameInput
+		targetCanvasPath = filepath.Join(targetArtistPath, finalCanvasName)
+
+		// Check again if the new name also conflicts
+		if _, err := os.Stat(targetCanvasPath); err == nil {
+			return fmt.Errorf("canvas %s also already exists in artist %s", finalCanvasName, targetArtistFullName)
+		}
 	}
 
 	// Get source artist name for context
 	sourceArtistName := filepath.Base(sourceArtistPath)
 
-	fmt.Printf("Cloning canvas %s from artist %s to artist %s...\n", canvasFullName, sourceArtistName, targetArtistFullName)
+	fmt.Printf("Cloning canvas %s from artist %s to artist %s", canvasFullName, sourceArtistName, targetArtistFullName)
+	if finalCanvasName != canvasFullName {
+		fmt.Printf(" as %s", finalCanvasName)
+	}
+	fmt.Printf("...\n")
 
 	// 1. Copy the canvas directory to the target artist
 	sourceCanvasPath := filepath.Join(sourceArtistPath, canvasFullName)
@@ -421,25 +447,34 @@ func CloneCanvas(canvasFullName, targetArtistFullName string) error {
 		return fmt.Errorf("failed to copy canvas directory: %w", err)
 	}
 
-	// 2. Update the .canvas file with new artist context
-	if err = updateCanvasContext(targetCanvasPath, targetArtistFullName); err != nil {
+	// 2. Update the .canvas file with new artist context and canvas name
+	canvasNameForContext := ""
+	if finalCanvasName != canvasFullName {
+		// Extract just the name part (remove "canvas-" prefix)
+		canvasNameForContext = strings.TrimPrefix(finalCanvasName, "canvas-")
+	}
+	if err = updateCanvasContext(targetCanvasPath, targetArtistFullName, canvasNameForContext); err != nil {
 		return fmt.Errorf("failed to update canvas context: %w", err)
 	}
 
 	// 3. Add canvas as submodule to target artist
-	if err = gitutil.AddSubmodule(targetArtistPath, canvasFullName); err != nil {
+	if err = gitutil.AddSubmodule(targetArtistPath, finalCanvasName); err != nil {
 		return fmt.Errorf("failed to add canvas as submodule to target artist: %w", err)
 	}
 
 	// 4. Stage and commit changes in target artist
-	if err = gitutil.AddPaths(targetArtistPath, ".gitmodules", canvasFullName); err != nil {
+	if err = gitutil.AddPaths(targetArtistPath, ".gitmodules", finalCanvasName); err != nil {
 		return fmt.Errorf("failed to stage changes in target artist: %w", err)
 	}
-	if err = gitutil.Commit(targetArtistPath, fmt.Sprintf("feat: add cloned canvas %s (from %s)", canvasFullName, sourceArtistName)); err != nil {
+	if err = gitutil.Commit(targetArtistPath, fmt.Sprintf("feat: add cloned canvas %s (from %s)", finalCanvasName, sourceArtistName)); err != nil {
 		return fmt.Errorf("failed to commit changes in target artist: %w", err)
 	}
 
-	fmt.Printf("Canvas %s successfully cloned from %s to %s!\n", canvasFullName, sourceArtistName, targetArtistFullName)
+	fmt.Printf("Canvas %s successfully cloned from %s to %s", canvasFullName, sourceArtistName, targetArtistFullName)
+	if finalCanvasName != canvasFullName {
+		fmt.Printf(" as %s", finalCanvasName)
+	}
+	fmt.Printf("!\n")
 	return nil
 }
 
@@ -487,7 +522,7 @@ func findCanvasArtist(atelierPath, canvasFullName string) (string, error) {
 }
 
 // updateCanvasContext updates the .canvas file with new artist context
-func updateCanvasContext(canvasPath, newArtistFullName string) error {
+func updateCanvasContext(canvasPath, newArtistFullName, newCanvasName string) error {
 	canvasFile := filepath.Join(canvasPath, ".canvas")
 	content, err := os.ReadFile(canvasFile)
 	if err != nil {
@@ -502,6 +537,9 @@ func updateCanvasContext(canvasPath, newArtistFullName string) error {
 		// Convert to new format with atelier, artist, canvas
 		atelierName := "atelier-" + strings.TrimPrefix(filepath.Base(filepath.Dir(filepath.Dir(filepath.Dir(canvasPath)))), "atelier-")
 		canvasName := lines[0]
+		if newCanvasName != "" {
+			canvasName = newCanvasName
+		}
 		newContent := fmt.Sprintf("%s\n%s\n%s", atelierName, newArtistFullName, canvasName)
 		if err = os.WriteFile(canvasFile, []byte(newContent), 0644); err != nil {
 			return fmt.Errorf("could not write updated .canvas file: %w", err)
@@ -511,6 +549,9 @@ func updateCanvasContext(canvasPath, newArtistFullName string) error {
 		// New format: atelier, artist, canvas
 		// Update the artist line (second line)
 		lines[1] = newArtistFullName
+		if newCanvasName != "" {
+			lines[2] = newCanvasName
+		}
 		newContent := strings.Join(lines, "\n")
 		if err = os.WriteFile(canvasFile, []byte(newContent), 0644); err != nil {
 			return fmt.Errorf("could not write updated .canvas file: %w", err)

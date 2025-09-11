@@ -26,3 +26,11 @@ func Confirm(message string) bool {
 		}
 	}
 }
+
+// Prompt prompts the user with a message and returns their input as a string.
+func Prompt(message string) string {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Printf("%s: ", message)
+	input, _ := reader.ReadString('\n')
+	return strings.TrimSpace(input)
+}

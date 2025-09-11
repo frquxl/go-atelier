@@ -86,13 +86,15 @@
 
 ### canvas clone
 - **Purpose**: Clones a canvas to another artist, creating a copy with proper Git submodule relationships.
-- **Usage**: `atelier-cli canvas clone <canvas-full-name> <target-artist-full-name>`
+- **Usage**: `atelier-cli canvas clone <canvas-full-name> <target-artist-full-name> [new-canvas-name]`
 - **Functionality**:
   - Can be run from any directory within an atelier (automatically finds the atelier root).
   - Automatically discovers which artist currently contains the source canvas.
-  - Validates that the target artist exists and prevents naming conflicts.
+  - Validates that the target artist exists.
+  - If no new name is provided and a naming conflict exists, prompts the user for a new canvas name.
+  - If a new name is provided as the third parameter, uses that name for the cloned canvas.
   - Copies the entire canvas directory to the target artist (preserving all files and Git history).
-  - Updates the cloned canvas's `.canvas` file with new artist context information.
+  - Updates the cloned canvas's `.canvas` file with new artist context and name information.
   - Adds the cloned canvas as submodule to the target artist with proper Git tracking.
   - Creates appropriate commit messages in the target artist.
   - Leaves the original canvas unchanged in its source artist.

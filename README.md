@@ -111,11 +111,18 @@ atelier-cli canvas move canvas-sunflowers artist-picasso
 cd atelier-my-project  # or any subdirectory
 atelier-cli canvas clone canvas-sunflowers artist-picasso
 
+# Clone a canvas with a specific new name
+atelier-cli canvas clone canvas-sunflowers artist-picasso sunflowers-experiment
+
+# Clone a canvas to the same artist (will prompt for new name if conflict exists)
+atelier-cli canvas clone canvas-sunflowers artist-van-gogh
+
 # The command will:
 # - Automatically find which artist currently contains 'canvas-sunflowers'
-# - Create a copy in 'artist-picasso'
+# - Create a copy in the target artist
 # - Preserve all files and Git history
 # - Update the cloned canvas's context information
+# - If no new name is provided and a conflict exists, prompt for a new name
 # - Leave the original canvas unchanged
 ```
 

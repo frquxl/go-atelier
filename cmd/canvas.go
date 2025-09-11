@@ -140,19 +140,28 @@ var canvasMoveCmd = &cobra.Command{
 }
 
 var canvasCloneCmd = &cobra.Command{
-	Use:   "clone <canvas-full-name> <target-artist-full-name>",
+	Use:   "clone <canvas-full-name> <target-artist-full-name> [new-canvas-name]",
 	Short: "Clone a canvas to another artist.",
-	Long:  `Clones a canvas from its current artist to another artist, creating a copy with proper Git submodule relationships.`,
-	Args:  cobra.ExactArgs(2),
+	Long:  `Clones a canvas from its current artist to another artist, creating a copy with proper Git submodule relationships. Optionally specify a new name for the cloned canvas.`,
+	Args:  cobra.RangeArgs(2, 3),
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		canvasFullName := args[0]
 		targetArtistFullName := args[1]
+		var newCanvasName string
 
-		if err := engine.CloneCanvas(canvasFullName, targetArtistFullName); err != nil {
+		if len(args) == 3 {
+			newCanvasName = args[2]
+		}
+
+		if err := engine.CloneCanvas(canvasFullName, targetArtistFullName, newCanvasName); err != nil {
 			return err
 		}
 
-		fmt.Printf("Canvas '%s' cloned to artist '%s' successfully!\n", canvasFullName, targetArtistFullName)
+		if newCanvasName != "" {
+			fmt.Printf("Canvas '%s' cloned to artist '%s' as '%s' successfully!\n", canvasFullName, targetArtistFullName, newCanvasName)
+		} else {
+			fmt.Printf("Canvas '%s' cloned to artist '%s' successfully!\n", canvasFullName, targetArtistFullName)
+		}
 		return nil
 	},
 }
