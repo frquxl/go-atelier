@@ -419,19 +419,21 @@ func CloneCanvas(canvasFullName, targetArtistFullName, newCanvasName string) err
 		if newCanvasName != "" {
 			return fmt.Errorf("canvas %s already exists in artist %s", finalCanvasName, targetArtistFullName)
 		}
-		// If no new name was provided and there's a conflict, prompt for a new name
-		fmt.Printf("Canvas '%s' already exists in artist '%s'.\n", canvasFullName, targetArtistFullName)
-		inputRaw := util.Prompt("Enter a new name for the cloned canvas")
-		nameBase := strings.TrimPrefix(strings.TrimSpace(inputRaw), "canvas-")
-		if nameBase == "" {
-			return fmt.Errorf("no valid name provided for cloned canvas")
-		}
-		finalCanvasName = "canvas-" + nameBase
-		targetCanvasPath = filepath.Join(targetArtistPath, finalCanvasName)
-
-		// Check again if the new name also conflicts
-		if _, err := os.Stat(targetCanvasPath); err == nil {
-			return fmt.Errorf("canvas %s also already exists in artist %s", finalCanvasName, targetArtistFullName)
+		// If no new name was provided and there's a conflict, prompt repeatedly until a unique name is provided
+		for {
+			fmt.Printf("Canvas '%s' already exists in artist '%s'.\n", finalCanvasName, targetArtistFullName)
+			inputRaw := util.Prompt("Enter a new name for the cloned canvas (without 'canvas-' prefix)")
+			nameBase := strings.TrimPrefix(strings.TrimSpace(inputRaw), "canvas-")
+			if nameBase == "" {
+				fmt.Println("Please enter a non-empty name.")
+				continue
+			}
+			finalCanvasName = "canvas-" + nameBase
+			targetCanvasPath = filepath.Join(targetArtistPath, finalCanvasName)
+			if _, err := os.Stat(targetCanvasPath); os.IsNotExist(err) {
+				break
+			}
+			fmt.Printf("Canvas '%s' also already exists in artist '%s'. Try another name.\n", finalCanvasName, targetArtistFullName)
 		}
 	}
 
