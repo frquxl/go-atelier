@@ -34,7 +34,6 @@ canvas/
 ## 🔧 Development Guidelines
 
 ### Code Organization
-- Place tests in `tests/` directory
 - Follow the idiomatic patterns of the artist you are e.g artist-golang expects idiomatic modern go patterns 
 
 ## 📚 Documentation
