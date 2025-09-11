@@ -447,13 +447,13 @@ func CloneCanvas(canvasFullName, targetArtistFullName, newCanvasName string) err
 		return fmt.Errorf("failed to copy canvas directory: %w", err)
 	}
 
-	// 2. Update the .canvas file with new artist context and canvas name
-	canvasNameForContext := ""
+	// 2. Update the .canvas file with new artist context and canvas dir name (with prefix)
+	canvasDirForContext := ""
 	if finalCanvasName != canvasFullName {
-		// Extract just the name part (remove "canvas-" prefix)
-		canvasNameForContext = strings.TrimPrefix(finalCanvasName, "canvas-")
+		// Use full directory name including "canvas-" prefix
+		canvasDirForContext = finalCanvasName
 	}
-	if err = updateCanvasContext(targetCanvasPath, targetArtistFullName, canvasNameForContext); err != nil {
+	if err = updateCanvasContext(targetCanvasPath, targetArtistFullName, canvasDirForContext); err != nil {
 		return fmt.Errorf("failed to update canvas context: %w", err)
 	}
 
@@ -677,4 +677,20 @@ func copyFile(sourceFile, targetFile string) error {
 
 	_, err = target.ReadFrom(source)
 	return err
+}
+
+// hasExistingCanvases checks if an artist directory has any canvas subdirectories
+func hasExistingCanvases(artistPath string) (bool, error) {
+	entries, err := os.ReadDir(artistPath)
+	if err != nil {
+		return false, fmt.Errorf("could not read artist directory: %w", err)
+	}
+
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasPrefix(entry.Name(), "canvas-") {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
